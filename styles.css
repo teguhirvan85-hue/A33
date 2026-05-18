@@ -64,7 +64,7 @@ img {
   inset: 0;
   width: 100vw;
   height: 100svh;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
   display: block;
   mix-blend-mode: screen;
@@ -113,41 +113,98 @@ img {
   }
 }
 
-/* ---------- Chrome A33 letters (background image) ---------- */
+/* ---------- Chrome A33 letters (background image + glass overlays) ---------- */
 .chrome {
   position: absolute;
   inset: 0;
-  z-index: 1;
   pointer-events: none;
 }
+/* Layering mirrors the Under Renovation pill: glass surface sits at the
+   TOP UI layer (z:4, same as .brand / .cta / .legal), with the cursor
+   fluid canvas (z:2) and chrome base (z:1) underneath. */
+.chrome-base-layer  { z-index: 2; }
+.chrome-glass-layer { z-index: 4; }
 
-.chrome img {
+/* Wrapper that owns the chrome image's responsive position + size. The
+   chrome image and the 3 per-letter glass overlay SVGs are absolutely
+   positioned inside this wrapper. The wrapper keeps the source aspect
+   (2327/1101) so the inset percentages on the letter overlays land on
+   the correct pixels of the underlying chrome image. */
+.chrome-wrap {
   position: absolute;
-  /* Figma canvas was 1600px wide with the chrome image at 2240px (140%).
-     On wider monitors we cap at 2240px so the letters don't keep growing —
-     they stay the size designed in Figma, with extra space around them. */
   width: min(140vw, 2240px);
-  max-width: none;
-  /* Horizontally: when uncapped (small screens) use Figma's -14% left offset,
-     so the image is shifted slightly left of center. When capped (≥1600px
-     viewport), centre it instead — gives balanced negative space. */
+  aspect-ratio: 2327 / 1101;
   left: max(-14vw, calc(50% - min(140vw, 2240px) / 2));
-  /* Vertically: match Figma's anchoring (image top at ~34% of viewport,
-     extending 37% below the bottom edge). */
   bottom: -37%;
-  object-fit: cover;
-  user-select: none;
-  -webkit-user-drag: none;
 }
 
-/* At 1920+ viewports, push the letters down so they fill the bottom 70% of
-   the viewport, leaving more breathing room above (matches user reference). */
 @media (min-width: 1900px) {
-  .chrome img {
+  .chrome-wrap {
     width: min(130vw, 2500px);
     left: max(-13vw, calc(50% - min(130vw, 2500px) / 2));
     bottom: -32%;
   }
+}
+
+/* Base chrome image — fills the wrapper. */
+.chrome-base,
+.chrome-base img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Letter-shaped glass overlays. Each .letter is a div with the EXACT
+   same glass effect as .pill (Under Renovation):
+   - rgba(255,255,255,0.14) background
+   - backdrop-filter: blur(10px)
+   - triple inset shadows for the glass rim highlights
+   then clipped to the letter shape via mask-image. */
+.chrome-wrap .letter {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow:
+    inset 0 2px 3px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -8px 14px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -8px 1px 0 rgba(255, 255, 255, 0.02);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+}
+.chrome-wrap .letter-a {
+  top: 12.71%;
+  left: 5.25%;
+  width: 32.39%;
+  height: 74.81%;
+  -webkit-mask-image: url('assets/letter-a-mask.svg');
+          mask-image: url('assets/letter-a-mask.svg');
+}
+.chrome-wrap .letter-3m {
+  top: 12.86%;
+  left: 40.55%;
+  width: 24.54%;
+  height: 76.28%;
+  -webkit-mask-image: url('assets/letter-3mid-mask.svg');
+          mask-image: url('assets/letter-3mid-mask.svg');
+}
+.chrome-wrap .letter-3r {
+  top: 13.11%;
+  left: 70.02%;
+  width: 24.55%;
+  height: 76.18%;
+  -webkit-mask-image: url('assets/letter-3right-mask.svg');
+          mask-image: url('assets/letter-3right-mask.svg');
 }
 
 /* ---------- Brand mark (top-left, always) ---------- */
@@ -155,7 +212,7 @@ img {
   position: absolute;
   top: var(--pad-y);
   left: var(--pad-x);
-  z-index: 3;
+  z-index: 4;
 }
 
 .brand .logo {
@@ -170,7 +227,7 @@ img {
   position: absolute;
   top: var(--pad-y);
   right: var(--pad-x);
-  z-index: 3;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -313,7 +370,7 @@ img {
   position: absolute;
   bottom: clamp(14px, 1.6vh + 6px, 24px);
   right: clamp(14px, 1.6vw + 6px, 28px);
-  z-index: 3;
+  z-index: 4;
   text-align: right;
   color: #7c7c7c;
   font-size: var(--legal-text);

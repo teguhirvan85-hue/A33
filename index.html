@@ -12,10 +12,26 @@
   <body>
     <canvas id="fluid" aria-hidden="true"></canvas>
     <main class="stage">
-      <picture class="chrome" aria-hidden="true">
-        <source media="(max-width: 720px)" srcset="assets/a33-chrome-mobile.png" />
-        <img src="assets/a33-chrome.png" alt="" />
-      </picture>
+      <!-- Layer 1 (below cursor fluid): chrome iridescent base image -->
+      <div class="chrome chrome-base-layer" aria-hidden="true">
+        <div class="chrome-wrap">
+          <picture class="chrome-base">
+            <source media="(max-width: 720px)" srcset="assets/a33-chrome-mobile.png" />
+            <img src="assets/a33-chrome.png" alt="" />
+          </picture>
+        </div>
+      </div>
+      <!-- Layer 3 (above cursor fluid): glass overlay shells per letter
+           (Figma node 11430:17). Each div has the EXACT same glass effect
+           as the Under Renovation pill (rgba bg + backdrop-filter blur +
+           triple inset shadows), clipped to the letter shape via mask. -->
+      <div class="chrome chrome-glass-layer" aria-hidden="true">
+        <div class="chrome-wrap">
+          <div class="letter letter-a"></div>
+          <div class="letter letter-3m"></div>
+          <div class="letter letter-3r"></div>
+        </div>
+      </div>
 
       <div class="glow" aria-hidden="true"></div>
 
