@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Advisory33 — Under Renovation</title>
+    <meta name="description" content="Advisory33 is under renovation, but still buying houses." />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/png" href="assets/logo.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="fluid" aria-hidden="true"></canvas>
+    <main class="stage">
+      <picture class="chrome" aria-hidden="true">
+        <source media="(max-width: 720px)" srcset="assets/a33-chrome-mobile.png" />
+        <img src="assets/a33-chrome.png" alt="" />
+      </picture>
+
+      <div class="glow" aria-hidden="true"></div>
+
+      <header class="brand">
+        <img src="assets/logo.png" alt="Advisory33" class="logo" width="162" height="33" />
+      </header>
+
+      <section class="cta">
+        <div class="pill" role="status" aria-label="Site status">
+          <svg
+            class="pill-fx"
+            viewBox="0 0 280 57"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            focusable="false"
+            overflow="visible"
+          >
+            <defs>
+              <linearGradient id="pill-rainbow" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#00ff5e" />
+                <stop offset="18%" stop-color="#00e7ff" />
+                <stop offset="36%" stop-color="#5b6dff" />
+                <stop offset="54%" stop-color="#c038ff" />
+                <stop offset="72%" stop-color="#ff2e9c" />
+                <stop offset="88%" stop-color="#ff5e2e" />
+                <stop offset="100%" stop-color="#ffae2e" />
+              </linearGradient>
+              <!-- The viewBox (280×57) is stretched non-uniformly to fit the
+                   responsive pill (≈4.9:1 aspect). To keep the blur looking
+                   symmetric in rendered pixels we use a LARGER stdDeviation
+                   on the vertical axis so the top/bottom halo matches the
+                   left/right halo visually. -->
+              <filter id="pill-blur" x="-20%" y="-150%" width="140%" height="400%">
+                <feGaussianBlur stdDeviation="2.5 2.5" />
+              </filter>
+              <!-- Mask that allows the glow OUTSIDE the pill but blocks any
+                   bleed into the interior — keeps the pill body clean black,
+                   matching the reference. Extra vertical padding so the
+                   bigger vertical blur isn't clipped. -->
+              <mask id="pill-outside-only" maskUnits="userSpaceOnUse">
+                <rect x="-60" y="-200" width="400" height="457" fill="white" />
+                <rect x="0" y="0" width="280" height="57" rx="28.5" ry="28.5" fill="black" />
+              </mask>
+            </defs>
+            <!-- Outer halo — wide blurred rainbow stroke, masked to render
+                 ONLY outside the pill so the interior stays black. -->
+            <g mask="url(#pill-outside-only)">
+              <rect
+                class="pill-fx-glow"
+                x="0.5"
+                y="0.5"
+                width="279"
+                height="56"
+                rx="28"
+                ry="28"
+                fill="none"
+                stroke="url(#pill-rainbow)"
+                stroke-width="4"
+                filter="url(#pill-blur)"
+                vector-effect="non-scaling-stroke"
+              />
+            </g>
+            <!-- Crisp 1px stroke ON the perimeter -->
+            <rect
+              class="pill-fx-stroke"
+              x="0.5"
+              y="0.5"
+              width="279"
+              height="56"
+              rx="28"
+              ry="28"
+              fill="none"
+              stroke="url(#pill-rainbow)"
+              stroke-width="1.5"
+              vector-effect="non-scaling-stroke"
+            />
+          </svg>
+          <span>Under Renovation</span>
+        </div>
+        <p class="tagline">But still buying houses</p>
+        <nav class="contacts" aria-label="Contact">
+          <a href="tel:+61000000000" class="contact">
+            <img src="assets/icon-call.png" alt="" aria-hidden="true" class="icon icon-call" width="16" height="25" />
+            <span>Call</span>
+          </a>
+          <a href="mailto:hello@advisory33.com" class="contact">
+            <img src="assets/icon-email.png" alt="" aria-hidden="true" class="icon icon-email" width="25" height="19" />
+            <span>Email</span>
+          </a>
+          <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" class="contact">
+            <img src="assets/icon-ig.png" alt="" aria-hidden="true" class="icon icon-ig" width="22" height="23" />
+            <span>IG</span>
+          </a>
+        </nav>
+      </section>
+
+      <footer class="legal">
+        <p>Roth Realty Pty Ltd ACN 651 481 515</p>
+        <p>Corporation Licence 10113443</p>
+      </footer>
+    </main>
+    <script type="module" src="fluid.js"></script>
+  </body>
+</html>
