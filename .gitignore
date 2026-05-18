@@ -4,3 +4,6 @@
 
 # Local backup files
 *.backup
+
+# Local Claude settings — should not be shared
+.claude/settings.local.json
