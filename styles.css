@@ -44,7 +44,7 @@ img {
   /* Typography */
   --pill-text: clamp(18px, 1.1vw + 14px, 28px);
   --tagline: clamp(14px, 0.6vw + 12px, 20px);
-  --contact-text: clamp(16px, 0.7vw + 13px, 23px);
+  --contact-text: clamp(16px, 0.7vw + 13px, 24px);
   --legal-text: clamp(9.5px, 0.15vw + 9px, 12px);
 
   /* Brand mark — preserves 162:33 aspect via width + aspect-ratio */
@@ -52,7 +52,7 @@ img {
 
   /* Spacing */
   --gap-cta: clamp(10px, 0.8vh + 6px, 16px);
-  --gap-contacts: clamp(16px, 1.4vw + 8px, 28px);
+  --gap-contacts: clamp(16px, 1.4vw + 8px, 24px);
   --cta-width: clamp(220px, 18vw + 80px, 320px);
 }
 
@@ -91,7 +91,7 @@ img {
   z-index: 0;
   pointer-events: none;
   background: url('assets/rectangle-bg.png') no-repeat center bottom;
-  background-size: 110% auto;
+  background-size: 121% auto;
   opacity: 0.85;
 }
 
@@ -99,7 +99,7 @@ img {
   .glow {
     bottom: 0;
     height: 55%;
-    background-size: 110% auto;
+    background-size: 121% auto;
     background-position: center bottom;
   }
 }
@@ -108,7 +108,7 @@ img {
   .glow {
     bottom: 0;
     height: 38%;
-    background-size: 180% auto;
+    background-size: 198% auto;
     opacity: 0.7;
   }
 }
@@ -134,14 +134,17 @@ img {
   position: absolute;
   width: min(140vw, 2240px);
   aspect-ratio: 2327 / 1101;
-  left: max(-14vw, calc(50% - min(140vw, 2240px) / 2));
+  /* Shift image slightly left of center (bumped from -14vw → -17vw
+     and from -13vw → -16vw at 1920+ so the visual centre of mass
+     sits closer to the viewport centre). */
+  left: max(-17vw, calc(50% - min(140vw, 2240px) / 2));
   bottom: -37%;
 }
 
 @media (min-width: 1900px) {
   .chrome-wrap {
     width: min(130vw, 2500px);
-    left: max(-13vw, calc(50% - min(130vw, 2500px) / 2));
+    left: max(-16vw, calc(50% - min(130vw, 2500px) / 2));
     bottom: -32%;
   }
 }
@@ -325,7 +328,7 @@ img {
 .contact {
   display: inline-flex;
   align-items: center;
-  gap: 0.35em;
+  gap: 8px;
   font-size: var(--contact-text);
   font-weight: 510;
   line-height: 1;
@@ -346,23 +349,13 @@ img {
   opacity: 0.7;
 }
 
-/* Icons — SVGs authored with preserveAspectRatio="none". Sized in em so they
-   scale with the contact font-size as it grows on bigger screens. */
+/* Icons — Vuesax outline 24×24 SVGs (uniform square). Sized in em so they
+   scale with the contact font-size (24px text → 24px icon, etc.). */
 .icon {
   display: block;
   flex-shrink: 0;
-}
-.icon-call {
-  width: 0.61em;
-  height: 0.96em;
-}
-.icon-email {
   width: 1em;
-  height: 0.74em;
-}
-.icon-ig {
-  width: 0.87em;
-  height: 0.91em;
+  height: 1em;
 }
 
 /* ---------- Legal (bottom-right on desktop, centered on mobile) ---------- */
@@ -392,38 +385,57 @@ img {
 @media (max-width: 720px) {
   :root {
     --pad-x: clamp(20px, 6vw, 36px);
-    --pad-y: clamp(36px, 7vh, 64px);
-    --cta-width: min(86vw, 340px);
+    --pad-y: clamp(28px, 5vh, 48px);
+    --cta-width: min(86vw, 280px);
+    /* Larger contact gap on mobile to match Figma 11403:44 */
+    --gap-cta: clamp(20px, 4vh, 30px);
   }
 
+  /* Logo top-CENTER (Figma 11403:44: left:50% with translateX(-50%), top:39px) */
   .brand {
-    position: relative;
-    top: auto;
-    left: auto;
-    padding: var(--pad-y) 0 0 var(--pad-x);
+    position: absolute;
+    top: var(--pad-y);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0;
   }
 
+  /* CTA cluster centered horizontally below the logo. Pill + contacts
+     stacked with --gap-cta. No tagline on mobile. */
   .cta {
-    position: relative;
-    top: auto;
+    position: absolute;
+    top: calc(var(--pad-y) + 50px); /* below logo */
     right: auto;
-    margin: clamp(36px, 9vh, 72px) auto 0;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
   }
 
+  /* Tagline hidden on mobile per Figma 11403:44 */
+  .tagline {
+    display: none;
+  }
+
+  /* Lower-opacity pill bg on mobile per Figma 11403:44 (rgba 0.08) */
+  .pill {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Legal bottom-right on mobile */
   .legal {
     bottom: clamp(12px, 2vh, 20px);
-    right: 0;
-    left: 0;
-    text-align: center;
-    padding: 0 16px;
+    right: clamp(16px, 4vw, 24px);
+    left: auto;
+    text-align: right;
+    padding: 0;
   }
 
-  .chrome img {
-    /* Letters need to be wider so they extend off-screen for the
-       "fading in from the bottom" mobile look in the mockup. */
-    width: 220%;
+  /* Chrome image bigger and pushed lower on mobile (Figma: width 285vw,
+     left -60vw, top 50% which → bottom ≈ -17%). */
+  .chrome-wrap {
+    width: 285%;
     left: -60%;
-    bottom: -10%;
+    bottom: -17%;
   }
 }
 
