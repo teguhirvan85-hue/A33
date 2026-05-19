@@ -610,8 +610,8 @@ img {
   }
 
   /* === Pill ::after: AUTO-animation (phantom cursor sweep) ===========
-     rgba lowered to 0.3 per client — subtler white specular that
-     doesn't overpower the small 224×47 pill. */
+     rgba 0.3 + radius reduced 40% per client (144 → 86.4) — subtler
+     specular that doesn't dominate the small 224×47 pill. */
   .pill::after {
     display: block;
     content: "";
@@ -619,7 +619,7 @@ img {
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
-      circle 144px at var(--auto-px, 50%) var(--auto-py, 50%),
+      circle 86.4px at var(--auto-px, 50%) var(--auto-py, 50%),
       rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0) 70%
     );
@@ -633,14 +633,14 @@ img {
   }
 
   /* === Pill ::before: TOUCH & DRAG (real cursor) =====================
-     Same lighter rgba 0.3 as ::after for consistency. */
+     Same lighter rgba 0.3 + radius 86.4 as ::after for consistency. */
   .pill::before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
-      circle 144px at var(--pmx, 50%) var(--pmy, 50%),
+      circle 86.4px at var(--pmx, 50%) var(--pmy, 50%),
       rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0) 70%
     );
