@@ -487,13 +487,14 @@ img {
     align-items: center;
   }
 
-  /* Pill — client-supplied PNG (assets/pill-mobile.png) per request,
-     scaled 0.8× from Figma: 280 → 224 wide, padding 12/10 → 9.6/8.
-     PNG stretches to fill the box so the glass look stays sharp. */
+  /* Pill — client-supplied PNG (assets/pill-mobile.png, 852×177).
+     aspect-ratio set to the PNG's natural aspect (4.81) so the
+     glass shape isn't distorted when sized to 224 wide. Height
+     auto-resolves to 224/4.81 = 46.6px. */
   .pill {
     background: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
     border-radius: 100px;
-    aspect-ratio: auto;
+    aspect-ratio: 852 / 177;
     width: 224px;
     height: auto;
     padding: 9.6px 8px;
