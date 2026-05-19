@@ -6,8 +6,62 @@
     <title>Advisory33 — Under Renovation</title>
     <meta name="description" content="Advisory33 is under renovation, but still buying houses." />
     <meta name="theme-color" content="#000000" />
+    <!-- PWA / "Add to Home Screen" — opens fullscreen on iOS Safari with
+         no browser chrome at all. The status-bar-style draws the system
+         status bar over our black background. mobile-web-app-capable is
+         the Android/Chrome equivalent. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Advisory33" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+    <link rel="apple-touch-icon" href="assets/logo.svg" />
     <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Layer 3 — minimize iOS Safari URL bar on load.
+      // Safari hides the URL bar when the user scrolls down. Since this
+      // landing page has no scrollable content, we trick it by making the
+      // body briefly slightly taller than the viewport, scrolling 1px,
+      // then restoring. Has no effect on Android/desktop; degrades
+      // gracefully on iOS versions where the trick no longer works.
+      (function () {
+        var ua = navigator.userAgent || "";
+        var isIOSSafari = /iP(ad|hone|od)/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
+        if (!isIOSSafari) return;
+        function hideBar() {
+          // Don't run if user has already scrolled or page is in standalone PWA mode.
+          if (window.scrollY > 0) return;
+          if (window.navigator.standalone) return;
+          var html = document.documentElement;
+          var body = document.body;
+          if (!body) return;
+          var prevBodyOverflow = body.style.overflow;
+          var prevBodyMinHeight = body.style.minHeight;
+          var prevHtmlOverflow = html.style.overflow;
+          // Make page briefly scrollable so scrollTo registers.
+          body.style.overflow = "visible";
+          html.style.overflow = "auto";
+          body.style.minHeight = "calc(100lvh + 1px)";
+          // Two RAFs to ensure layout has applied before scrolling.
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              window.scrollTo(0, 1);
+              // Restore after Safari registers the scroll & retracts the bar.
+              setTimeout(function () {
+                body.style.overflow = prevBodyOverflow;
+                body.style.minHeight = prevBodyMinHeight;
+                html.style.overflow = prevHtmlOverflow;
+              }, 250);
+            });
+          });
+        }
+        if (document.readyState === "complete") {
+          hideBar();
+        } else {
+          window.addEventListener("load", hideBar);
+        }
+      })();
+    </script>
   </head>
   <body>
     <main class="stage">

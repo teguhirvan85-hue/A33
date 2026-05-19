@@ -20,7 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
-  min-height: 100svh;
+  min-height: 100dvh;
 }
 
 a {
@@ -108,7 +108,7 @@ img {
 .stage {
   position: relative;
   width: 100%;
-  min-height: 100svh;
+  min-height: 100dvh;
   overflow: hidden;
 }
 
@@ -137,12 +137,14 @@ img {
 @media (max-width: 720px) {
   /* Mobile glow — Figma 11448:103 frame inside V2 (canvas 440×952):
      left -88, width 670, top 365, height 627.
-     -88/440 = -20vw, 670/440 = 152.3vw, 365/952 = 38.34vh, 627/952 = 65.86vh */
+     -88/440 = -20vw, 670/440 = 152.3vw, 365/952 = 38.34vh, 627/952 = 65.86vh.
+     dvh (instead of vh) so the glow stays in the visible area as iOS
+     Safari's URL bar shows/hides — vh would put it under the toolbar. */
   .glow {
     left: -20vw;
     width: 152.3vw;
-    top: 38.34vh;
-    height: 65.86vh;
+    top: 38.34dvh;
+    height: 65.86dvh;
     right: auto;
     bottom: auto;
   }
@@ -409,8 +411,10 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Logo top — 39/952 = 4.1vh */
-    --pad-y: 4.1vh;
+    /* Logo top — 39/952 = 4.1dvh. dvh = dynamic viewport height, which
+       accounts for iOS Safari's URL bar showing/hiding. Using vh here
+       would position the logo above the URL bar (hidden) on Safari. */
+    --pad-y: 4.1dvh;
     /* CTA cluster width — fixed at Figma 280px (caps on narrow phones) */
     --cta-width: min(280px, 86vw);
     /* Reset desktop-pin variables that bleed in */
@@ -419,19 +423,23 @@ img {
     --legal-text: 11px;
   }
 
-  /* Logo centered (Figma 11448:110: -translate-x-1/2 left-1/2 top-39 w-162) */
+  /* Logo centered (Figma 11448:110). max() with safe-area-inset-top so
+     it never goes under the iPhone notch / Dynamic Island — adds 8px
+     breathing room past the safe area on notched devices. */
   .brand {
     position: absolute;
-    top: var(--pad-y);            /* 4.1vh = 39 at 952vh */
+    top: max(calc(env(safe-area-inset-top) + 8px), var(--pad-y));
     left: 50%;
     transform: translateX(-50%);
     padding: 0;
   }
 
-  /* CTA cluster — Figma 11448:122: top-115 left-80 w-280, gap-30 */
+  /* CTA cluster — Figma 11448:122: top-115 left-80 w-280, gap-30.
+     Anchor to brand offset so the cluster stays a constant distance
+     below the logo even when the logo is pushed down by the safe area. */
   .cta {
     position: absolute;
-    top: 12.08vh;                  /* 115/952 */
+    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 8.06dvh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -478,9 +486,11 @@ img {
 
   /* Legal — Figma 11448:140: bottom-centered (~18 from bottom, font 11
      #7c7c7c). nowrap keeps each line on one row even on narrow phones.
-     On iOS push above safe-area-inset-bottom for home indicator. */
+     bottom uses dvh so it sits above iOS Safari's bottom toolbar (dvh
+     excludes the toolbar). max() with env(safe-area-inset-bottom) adds
+     extra clearance for the home indicator when the toolbar is hidden. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 1.88vh);
+    bottom: max(calc(env(safe-area-inset-bottom) + 8px), 1.88dvh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -490,11 +500,13 @@ img {
   }
 
   /* Chrome image — Figma 11488:149: w-1251 h-592 left:-265 top:442
-     on canvas 440×952. Reset desktop's translateX + top: 32% overrides. */
+     on canvas 440×952. dvh so it stays anchored within the visible
+     area on iOS Safari (vh would position it relative to the full
+     viewport including Safari chrome, pushing it under the toolbar). */
   .chrome-wrap {
     width: 284.3vw;                /* 1251/440 */
     left: -60.23vw;                 /* -265/440 */
-    top: 46.43vh;                  /* 442/952 */
+    top: 46.43dvh;                  /* 442/952 */
     bottom: auto;
     transform: none;
   }
