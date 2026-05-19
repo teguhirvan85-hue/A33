@@ -522,13 +522,22 @@ img {
     white-space: nowrap;
   }
 
-  /* Chrome image — Figma 11448:102 updated: smaller and positioned
-     higher to fit Safari visible area cleanly.
-     width 1081.93/440 = 245.89vw, left -193/440 = -43.86vw,
-     top 329/952 = 34.56svh, height 511.9/952 = 53.77svh.
-     Chrome now fits within canvas (no overflow at bottom). */
+  /* Chrome image — Figma 11448:102 updated.
+     Width capped by BOTH vw and svh so chrome stays the same Figma
+     proportion of the visible area at every viewport. Without the
+     svh cap, on iOS Safari with bars (visible area shorter than the
+     952 canvas) the chrome occupies a much larger % of svh than
+     Figma intends — visually dominant and over-clipped.
+
+     Figma at 440×952: chrome 1081.93 × 511.9. Chrome height ratio
+     to canvas = 511.9 / 952 = 53.77%. Therefore chrome width =
+     53.77svh × 2327/1101 = 113.62svh.
+
+     min(245.89vw, 113.62svh): at Figma canvas 440×952, vw wins
+     (1082 ≈ 1082, Figma exact). At Safari 440×800 svh, svh wins
+     (chrome 909, ~13.4% smaller — fits visible area cleanly). */
   .chrome-wrap {
-    width: 245.89vw;
+    width: min(245.89vw, 113.62svh);
     left: -43.86vw;
     top: 34.56svh;
     bottom: auto;
