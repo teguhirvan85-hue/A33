@@ -835,6 +835,11 @@ img {
     --pad-x: clamp(48px, 3vw, 96px);
     --pad-y: clamp(48px, 3vh, 80px);
   }
+  /* Chrome A33 raised 100px at 1920+ per client (chrome was sitting too
+     low at 1920). 345.6 (Opsi B value at 1920) − 100 = 245.6px. */
+  .chrome-wrap {
+    top: 245.6px;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
