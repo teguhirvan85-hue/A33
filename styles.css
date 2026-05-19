@@ -480,12 +480,11 @@ img {
     display: none;
   }
 
-  /* Legal — Figma 11448:140: bottom-CENTERED, ~18 from bottom.
-     Tighter bottom spacing per client — legal sits closer to the
-     viewport edge. env(safe-area-inset-bottom) still adds clearance
-     for the iOS home indicator when present. */
+  /* Legal — Figma 11448:140: bottom-CENTERED, 1.88% from canvas bottom
+     = 17.9px on 952 canvas. Matches Figma exactly. env-safe-bottom
+     overrides on iOS devices with a home indicator (~34px). */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 8px);
+    bottom: max(env(safe-area-inset-bottom), 1.88svh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -494,22 +493,17 @@ img {
     white-space: nowrap;
   }
 
-  /* Chrome image — Figma 11488:149.
-     Two changes vs the desktop default:
-     - width capped by svh: min(284.3vw, 131.4svh). 131.4svh × 1101/2327
-       = 62.2svh height, matching Figma's chrome height ratio (592/952)
-       at the reference canvas. On narrow/short Safari viewports the
-       svh cap kicks in so chrome height never exceeds ~62% of visible
-       area.
-     - bottom-anchored (bottom: 0): chrome's bottom edge stops at the
-       top of the Safari toolbar (svh bottom) so the toolbar never
-       clips the letters. Replaces top: 46.43svh which left chrome
-       extending past svh on shorter visible areas. */
+  /* Chrome image — Figma 11448:102 / 11488:149 exact:
+     width 1251 / 440 = 284.3vw, left -265/440 = -60.23vw,
+     top 442/952 = 46.43svh. Figma intends ~8.6% bottom clip
+     (chrome bottom = 1034, canvas = 952). On iOS Safari with bars
+     showing the clip will be larger — that's a known trade-off the
+     client has accepted to keep the Figma composition. */
   .chrome-wrap {
-    width: min(284.3vw, 131.4svh);
+    width: 284.3vw;
     left: -60.23vw;
-    bottom: 0;
-    top: auto;
+    top: 46.43svh;
+    bottom: auto;
     transform: none;
   }
 }
