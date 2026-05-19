@@ -491,33 +491,82 @@ img {
   }
 }
 
-/* ---------- 1440+ desktop pin (Option C per client) -----------------
-   Per client direction, the 1440 layout should match 1920 1:1 for all
-   UI chrome (logo, padding, contact text, legal). Without this, several
-   clamp() values keep scaling down with vw between 1440 and ~1728, so
-   the same page on a MacBook Air 13" feels visibly smaller than on a
-   1920 monitor.
+/* ---------- 1440+ rescale (Option B per client) ---------------------
+   Treat 1920×1080 as the reference; viewports in [1440, 1920) get a
+   true linear rescale of EVERYTHING by (vw / 1920). At 1440 every value
+   becomes 0.75× its 1920 spec — logo 121.5px, pad-x 43.2px, pill 210px,
+   chrome 1620px, etc. — so the 1440 layout looks like a perfect
+   shrunk copy of the 1920 composition.
 
-   The chrome image + glow + cursor highlight intentionally STAY
-   viewport-relative — pinning them to 1920 sizes would crop the A33
-   letters more aggressively on 1440 and over-size the highlight effect.
+   Implementation: each property is `min(N vw, 1920_value_px)` where N%
+   is the property's 1920 px-value divided by 1920. At >= 1920 every
+   min() caps at the 1920 px-value (no change). Between 1440 and 1920
+   the vw expression wins and gives proportional scaling.
 
    Placed BEFORE the >=1920 ultra-wide block so the ultra-wide block
-   wins for true 1920+ displays (pad-x/pad-y get progressive scaling). */
+   keeps its progressive pad-x/pad-y bloom for true ultra-wide. */
 @media (min-width: 1440px) {
   :root {
-    --pad-x: 57.6px;       /* matches 1920×1080: 3vw cap from ultra-wide rule */
-    --pad-y: 48px;          /* matches 1920×1080 */
-    --cta-right: 65px;     /* matches 1920 (clamp cap) */
-    --legal-right: 24px;
-    --legal-bottom: 23px;
-    --contact-text: 24px;
-    --logo-w: 162px;
+    /* Padding & layout offsets */
+    --pad-x: min(3vw, 57.6px);              /* 57.6 / 1920 = 3.0% */
+    --pad-y: min(2.5vw, 48px);              /* 48 / 1920 */
+    --cta-right: min(3.385vw, 65px);
+    --legal-right: min(1.25vw, 24px);
+    --legal-bottom: min(1.198vw, 23px);
+
+    /* Typography */
+    --contact-text: min(1.25vw, 24px);
+    --tagline: min(1.042vw, 20px);
+    --legal-text: min(0.573vw, 11px);
+
+    /* Logo + CTA cluster widths */
+    --logo-w: min(8.4375vw, 162px);          /* 162 / 1920 = 8.4375% */
+    --cta-width: min(14.583vw, 280px);
   }
-  /* CTA top uses vh-based clamp inline on .cta — override to match 1920
-     which caps at 50px. */
+
+  /* Hardcoded px values that aren't wired through CSS vars — override
+     them inline so the rescale is comprehensive. */
   .cta {
-    top: 50px;
+    top: min(2.604vw, 50px);
+    gap: min(1.563vw, 30px);
+  }
+  .cta-head {
+    gap: min(0.313vw, 6px);
+  }
+  .pill {
+    padding: min(0.625vw, 12px) min(0.521vw, 10px);
+  }
+  .pill > span {
+    font-size: min(1.458vw, 28px);
+  }
+  .contact {
+    gap: min(0.417vw, 8px);
+  }
+  .contacts {
+    gap: min(1.25vw, 24px);
+  }
+
+  /* Chrome A33 image — at 1920 it's 2160 wide (200vh), 32%vh top. We
+     rescale to 2160 × scale at 1440-1919, keeping it centered. */
+  .chrome-wrap {
+    width: min(112.5vw, 2160px);           /* 2160 / 1920 */
+    top: min(18vw, 345.6px);                /* 345.6 / 1920 */
+  }
+
+  /* Cursor highlight on chrome — 320px at 1920, scales down with vw. */
+  .chrome-wrap::after {
+    --highlight-r: min(16.667vw, 320px);
+  }
+
+  /* Glow circles — rescale all four properties so the glow scales
+     with the rest of the composition. */
+  .glow {
+    width: min(118vw, 2265.6px);
+    height: min(53.438vw, 1026px);
+    top: min(29.557vw, 567.5px);
+    /* Negative offset — max() because the larger (less-negative)
+       value wins below 1920; at 1920 both equal -67.2. */
+    left: max(-3.5vw, -67.2px);
   }
 }
 
