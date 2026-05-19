@@ -493,17 +493,20 @@ img {
     white-space: nowrap;
   }
 
-  /* Chrome image — Figma 11448:102 / 11488:149 exact:
-     width 1251 / 440 = 284.3vw, left -265/440 = -60.23vw,
-     top 442/952 = 46.43svh. Figma intends ~8.6% bottom clip
-     (chrome bottom = 1034, canvas = 952). On iOS Safari with bars
-     showing the clip will be larger — that's a known trade-off the
-     client has accepted to keep the Figma composition. */
+  /* Chrome image — Figma 11448:102 / 11488:149.
+     Figma reference: chrome bottom = 1034 on canvas 952, i.e. extends
+     8.6% past the canvas bottom (intended clip). We anchor by bottom
+     so this 8.6% ratio is preserved at every viewport — at 440×952
+     chrome top resolves to 442 (Figma exact), at 393×734 (iPhone with
+     Safari bars) chrome top resolves to ~268, so the letters still
+     occupy the same Figma proportion of the visible area instead of
+     getting cropped 25% by the Safari toolbar.
+     width: 284.3vw (= 1251 at 440), left: -60.23vw (= -265 at 440). */
   .chrome-wrap {
     width: 284.3vw;
     left: -60.23vw;
-    top: 46.43svh;
-    bottom: auto;
+    bottom: -8.6svh;
+    top: auto;
     transform: none;
   }
 }
