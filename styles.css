@@ -174,16 +174,17 @@ img {
   100% { --auto-x: 15%; --auto-y: 40%; --auto-opacity: 0; }
 }
 
-/* Pill specular sweep — ONE-WAY left → right, fade out, then restart
-   from the left. Earlier version ping-ponged (sweep right then return
-   left), which felt unnatural. At the loop boundary (100% → 0%), the
-   position snaps from 105% back to -5% but opacity is 0 in both, so
-   the back-travel is invisible. */
+/* Pill specular sweep — ONE-WAY left → right, fade out, then 1s pause,
+   then restart from the left. Animation total duration 8s: 7s sweep
+   (matching the old timing) + 1s hold at the end (opacity 0, position
+   stays off-screen-right so the back-travel to start is invisible).
+   The hold gives a breathing pause between cycles. */
 @keyframes pill-auto-sweep {
-  0%   { --auto-px:  -5%; --auto-py: 50%; --auto-opacity: 0; }
-  10%  { --auto-px:   5%; --auto-py: 50%; --auto-opacity: 1; }
-  90%  { --auto-px:  95%; --auto-py: 50%; --auto-opacity: 1; }
-  100% { --auto-px: 105%; --auto-py: 50%; --auto-opacity: 0; }
+  0%     { --auto-px:  -5%; --auto-py: 50%; --auto-opacity: 0; }
+  8.75%  { --auto-px:   5%; --auto-py: 50%; --auto-opacity: 1; }
+  78.75% { --auto-px:  95%; --auto-py: 50%; --auto-opacity: 1; }
+  87.5%  { --auto-px: 105%; --auto-py: 50%; --auto-opacity: 0; }
+  100%   { --auto-px: 105%; --auto-py: 50%; --auto-opacity: 0; }
 }
 
 /* ---------- Stage ---------- */
@@ -627,8 +628,9 @@ img {
             mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
     mix-blend-mode: screen;
     opacity: var(--auto-opacity, 0);
-    /* Slower sweep per client: 4s → 7s for a more relaxed pace */
-    animation: pill-auto-sweep 7s ease-in-out infinite;
+    /* 8s total = 7s sweep + 1s pause per client (pause built into the
+       last 12.5% of keyframes, holds off-screen right at opacity 0) */
+    animation: pill-auto-sweep 8s ease-in-out infinite;
     z-index: 1;
   }
 
