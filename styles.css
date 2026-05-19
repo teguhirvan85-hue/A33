@@ -144,13 +144,16 @@ img {
   100% { --auto-x: 15%; --auto-y: 40%; --auto-opacity: 0; }
 }
 
-/* Pill specular sweep — left-to-right with fade in/out at edges */
+/* Pill specular sweep — ONE-WAY left → right, fade out, then restart
+   from the left. Earlier version ping-ponged (sweep right then return
+   left), which felt unnatural. At the loop boundary (100% → 0%), the
+   position snaps from 105% back to -5% but opacity is 0 in both, so
+   the back-travel is invisible. */
 @keyframes pill-auto-sweep {
-  0%   { --auto-px:  -5%; --auto-py: 45%; --auto-opacity: 0; }
-  15%  { --auto-opacity: 1; }
-  50%  { --auto-px: 105%; --auto-py: 55%; --auto-opacity: 1; }
-  85%  { --auto-opacity: 1; }
-  100% { --auto-px:  -5%; --auto-py: 45%; --auto-opacity: 0; }
+  0%   { --auto-px:  -5%; --auto-py: 50%; --auto-opacity: 0; }
+  10%  { --auto-px:   5%; --auto-py: 50%; --auto-opacity: 1; }
+  90%  { --auto-px:  95%; --auto-py: 50%; --auto-opacity: 1; }
+  100% { --auto-px: 105%; --auto-py: 50%; --auto-opacity: 0; }
 }
 
 /* ---------- Stage ---------- */
