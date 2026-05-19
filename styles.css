@@ -99,6 +99,36 @@ img {
   opacity: var(--chrome-active, 0);
 }
 
+/* ---------- Auto-animation layer on A33 chrome (desktop) -------------
+   Phantom cursor sweep that runs continuously, layered ABOVE the
+   cursor-tracked ::after via mix-blend-mode: screen. Mobile @media
+   below overrides this ::before to be the touch-cursor layer, so
+   this rule only takes effect on desktop. --highlight-r matches the
+   ::after formula so the auto highlight reads the same size as a
+   real cursor highlight. --auto-x/--auto-y/--auto-opacity are
+   driven by @keyframes chrome-auto-sweep (declared further down).
+   PILL UNCHANGED — only chrome A33 gets auto-animation on desktop. */
+.chrome-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  --highlight-r: min(320px, calc(min(140vw, 200vh, 2240px) * 0.148));
+  background: radial-gradient(
+    circle var(--highlight-r) at var(--auto-x, 50%) var(--auto-y, 50%),
+    rgba(255, 255, 255, 0.9),
+    transparent 65%
+  );
+  -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+          mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+  -webkit-mask-mode: luminance;
+          mask-mode: luminance;
+  mix-blend-mode: screen;
+  opacity: var(--auto-opacity, 0);
+  animation: chrome-auto-sweep 6s ease-in-out infinite;
+}
+
 /* === Auto-animation infrastructure (mobile only) ===================
    @property declarations enable smooth interpolation of CSS custom
    properties via @keyframes. --auto-opacity is animated alongside
@@ -678,6 +708,10 @@ img {
             mask: url('assets/a33-chrome-rim-mask.png') no-repeat center / 100% 100%;
     mix-blend-mode: screen;
     opacity: var(--chrome-active, 0);
+    /* Override desktop ::before auto-animation — on mobile this layer
+       is touch-driven only, no sweep. (Mobile ::after handles the
+       auto-animation.) */
+    animation: none;
   }
 
   /* Tagline hidden — Figma 11448:102 has no tagline on mobile */
@@ -853,8 +887,11 @@ img {
   .contact {
     transition: none;
   }
-  /* Pause mobile auto-animations for users with motion sensitivity */
+  /* Pause auto-animations for users with motion sensitivity.
+     Includes desktop chrome ::before (added later) so both desktop
+     and mobile auto-sweeps respect the user preference. */
   .chrome-wrap::after,
+  .chrome-wrap::before,
   .pill::after {
     animation: none;
   }
