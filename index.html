@@ -64,22 +64,6 @@
     </script>
   </head>
   <body>
-    <!-- Inline SVG mask definition — referenced ONLY by mobile CSS via
-         url('#chrome-rim-mask'). Provides a luminance mask using the
-         chrome PNG so iOS Safari (which has flaky CSS mask-mode +
-         -webkit-mask-source-type support) renders the same rainbow-rim
-         only behavior as Android Chrome. mask-type="luminance" is part
-         of standard SVG masking, universally honored. width=0 height=0
-         keeps the SVG element itself invisible. -->
-    <svg width="0" height="0" style="position:absolute;" aria-hidden="true">
-      <defs>
-        <mask id="chrome-rim-mask" maskUnits="objectBoundingBox"
-              maskContentUnits="objectBoundingBox" mask-type="luminance">
-          <image href="assets/a33-chrome.png" x="0" y="0" width="1" height="1"
-                 preserveAspectRatio="none" />
-        </mask>
-      </defs>
-    </svg>
     <main class="stage">
       <!-- Chrome iridescent A33 image (Figma 11448:173) -->
       <div class="chrome" aria-hidden="true">
