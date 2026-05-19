@@ -532,12 +532,11 @@ img {
     transform: none;
   }
 
-  /* Legal — lowered per client. Bottom 12.87svh (Figma 122.5/952) →
-     5svh (~48px from viewport bottom), so legal sits well below the
-     raised chrome, "tepat dibawah A33". env-safe-bottom still wins
-     on iOS with home indicator. */
+  /* Legal — lowered further per client (5svh → 2svh = ~19px from
+     viewport bottom). env-safe-bottom still wins on iOS devices with
+     a home indicator (~34px) so it never overlaps the indicator. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 5svh);
+    bottom: max(env(safe-area-inset-bottom), 2svh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
