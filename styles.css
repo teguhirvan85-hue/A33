@@ -472,17 +472,17 @@ img {
     padding: 0;
   }
 
-  /* CTA cluster — anchored to brand top + 70px (scaled logo height
-     26.4 + Figma 43px gap, rounded). Width 224 to match the 0.8×
-     pill scale. */
+  /* CTA cluster — 0.8× scale:
+     - top offset from logo: 26.4 (scaled logo h) + 34.4 (gap 43×0.8) = 60.8
+     - gap (pill → contacts): 30 × 0.8 = 24 */
   .cta {
     position: absolute;
-    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 70px);
+    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 60.8px);
     left: 50%;
     right: auto;
     transform: translateX(-50%);
     margin: 0;
-    gap: 30px;
+    gap: 24px;
     width: 224px;
     align-items: center;
   }
@@ -509,9 +509,9 @@ img {
     font-size: 22.4px;
   }
 
-  /* Contacts row — Figma 11448:125: gap 24 between items */
+  /* Contacts row — Figma gap 24 × 0.8 = 19.2 */
   .contacts {
-    gap: 24px;
+    gap: 19.2px;
   }
 
   /* Touch-no-ops for hover/cursor effects */
