@@ -726,7 +726,7 @@ img {
   .chrome-wrap {
     width: 245.89vw;
     left: -43.86vw;
-    top: calc(28svh + 10px);
+    top: calc(28svh + 20px);
     bottom: auto;
     transform: none;
   }
