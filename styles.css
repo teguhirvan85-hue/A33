@@ -520,21 +520,24 @@ img {
     display: none;
   }
 
-  /* Chrome — Figma 11488:149: w 1081.93, h 511.9, left -193, top 329.
-     1081.93/440 = 245.89vw, -193/440 = -43.86vw, 329/952 = 34.56svh. */
+  /* Chrome — Figma 11488:149, raised per client.
+     Width/left match Figma; top reduced from 34.56svh (Figma 329) to
+     28svh so chrome sits higher in the viewport (~62px raised at
+     440×952), leaving more clear space below for the legal text. */
   .chrome-wrap {
     width: 245.89vw;
     left: -43.86vw;
-    top: 34.56svh;
+    top: 28svh;
     bottom: auto;
     transform: none;
   }
 
-  /* Legal — Figma 11448:140: centered, bottom 12.87% of canvas.
-     12.87% × 952 = 122.5px from canvas bottom.
-     env-safe-bottom wins on iOS devices with home indicator. */
+  /* Legal — lowered per client. Bottom 12.87svh (Figma 122.5/952) →
+     5svh (~48px from viewport bottom), so legal sits well below the
+     raised chrome, "tepat dibawah A33". env-safe-bottom still wins
+     on iOS with home indicator. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 12.87svh);
+    bottom: max(env(safe-area-inset-bottom), 5svh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
