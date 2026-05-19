@@ -399,65 +399,71 @@ img {
    ==================================================================== */
 
 /* ---------- Phone & narrow tablet (≤720px wide) ---------------------
-   Layout matches Figma 11448:102 (V2) — canvas 440×952. All positions
-   convert directly: x/width as %vw of 440, y/height as %vh of 952.
+   Layout matches Figma 11488:94 (iPhone 16 & 17 Pro Max - 1) — canvas
+   440×952. All positions convert: x/width as %vw of 440, y/height as
+   %svh of 952. svh so the layout fits iOS Safari's visible area.
 
-   Key differences from desktop:
-   - Logo centered horizontally (not top-left)
-   - Pill+contacts cluster centered, no tagline
-   - Pill uses simpler CSS bg (rgba 0.08 + inset shadows), no SVG/rainbow
-   - Legal centered at bottom (not right-aligned)
-   - Chrome image larger (284vw) and positioned by top, not bottom
+   Differences from desktop:
+   - Logo top-LEFT (not centered)
+   - CTA cluster anchored left (not centered)
+   - Pill 290×66 with CSS glass effect (no SVG)
+   - Tagline VISIBLE
+   - Contact text 23px
+   - Legal bottom-LEFT, left-aligned
+   - Chrome bottom-anchored, capped by svh to never clip
 */
 @media (max-width: 720px) {
   :root {
-    /* Logo top — 39/952 = 4.1svh. dvh = dynamic viewport height, which
-       accounts for iOS Safari's URL bar showing/hiding. Using vh here
-       would position the logo above the URL bar (hidden) on Safari. */
+    /* Brand top — 39/952 = 4.1svh */
     --pad-y: 4.1svh;
-    /* CTA cluster width — fixed at Figma 280px (caps on narrow phones) */
-    --cta-width: min(280px, 86vw);
+    /* CTA cluster width — Figma 11488:116: 290 */
+    --cta-width: min(290px, 86vw);
     /* Reset desktop-pin variables that bleed in */
     --logo-w: min(162px, 36.82vw);
-    --contact-text: 24px;
+    --contact-text: 23px;
     --legal-text: 11px;
   }
 
-  /* Logo centered (Figma 11448:110). max() with safe-area-inset-top so
-     it never goes under the iPhone notch / Dynamic Island — adds 8px
-     breathing room past the safe area on notched devices. */
+  /* Logo top-LEFT (Figma 11488:103: left 34, top 39, w 162×h 33).
+     34/440 = 7.73vw. max() with safe-area-inset-* so logo stays clear
+     of notch / Dynamic Island and left-side safe area. */
   .brand {
     position: absolute;
     top: max(calc(env(safe-area-inset-top) + 8px), var(--pad-y));
-    left: 50%;
-    transform: translateX(-50%);
+    left: max(calc(env(safe-area-inset-left) + 12px), 7.73vw);
+    transform: none;
     padding: 0;
   }
 
-  /* CTA cluster — Figma 11448:122: top-115 left-80 w-280, gap-30.
-     Anchor to brand offset so the cluster stays a constant distance
-     below the logo even when the logo is pushed down by the safe area. */
+  /* CTA cluster — Figma 11488:115: left 75, top 159, w 290.
+     75/440 = 17.05vw, 159/952 = 16.70svh. Anchored top-left. */
   .cta {
     position: absolute;
-    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 8.06svh);
+    top: 16.70svh;
+    left: max(calc(env(safe-area-inset-left) + 12px), 17.05vw);
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    transform: none;
     margin: 0;
     gap: 30px;
-    width: 280px;
+    width: 290px;
+    align-items: center;
   }
 
-  /* Pill — Figma 11448:123 mobile variant:
-     - bg rgba(255,255,255,0.08)  (desktop is 0.14)
-     - radius 100
-     - inset shadows: top white 24%, bottom rim 12% + 2%
-     - no SVG, no rainbow halo, no drop-shadow filter */
+  /* Pill→tagline gap — Figma: pill bottom 225, tagline top 227 → 2px */
+  .cta-head {
+    gap: 2px;
+  }
+
+  /* Pill — Figma 11488:116: w 290 × h 66 with glass-pill image.
+     CSS approximation with rgba 0.08 + 3 inset shadows. Padding 0 +
+     flex centering so text 28 sits at vertical middle of 66px box. */
   .pill {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 100px;
     aspect-ratio: auto;
-    padding: 12px 10px;
+    width: 290px;
+    height: 66px;
+    padding: 0;
     filter: none;
     box-shadow:
       inset 0 2px 3px rgba(255, 255, 255, 0.24),
@@ -480,21 +486,24 @@ img {
     font-size: 28px;
   }
 
+  /* Tagline VISIBLE on mobile per Figma 11488:118: "But still buying
+     houses", 20px, centered. Re-enables what the older mobile design
+     hid; this iPhone 17 Pro Max design shows it. */
   .tagline {
-    display: none;
+    display: block;
+    font-size: 20px;
+    color: #fff;
+    text-align: center;
   }
 
-  /* Legal — Figma 11448:140: bottom-centered (~18 from bottom, font 11
-     #7c7c7c). nowrap keeps each line on one row even on narrow phones.
-     bottom uses dvh so it sits above iOS Safari's bottom toolbar (dvh
-     excludes the toolbar). max() with env(safe-area-inset-bottom) adds
-     extra clearance for the home indicator when the toolbar is hidden. */
+  /* Legal — Figma 11488:132: bottom-LEFT, left-aligned text.
+     left 3.86vw, bottom buffer for home indicator. */
   .legal {
     bottom: max(calc(env(safe-area-inset-bottom) + 16px), 20px);
     right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    left: max(calc(env(safe-area-inset-left) + 12px), 3.86vw);
+    transform: none;
+    text-align: left;
     padding: 0;
     white-space: nowrap;
   }
