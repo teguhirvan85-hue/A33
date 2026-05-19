@@ -450,17 +450,14 @@ img {
     align-items: center;
   }
 
-  /* Pill on mobile uses a PURE-VECTOR SVG (assets/pill-mobile.svg).
-     The desktop pill.svg has a <foreignObject> containing an HTML
-     conic-gradient — that's what Figma exports use to fake conic
-     gradients in SVG. But foreignObject rasterizes at the SVG's
-     intrinsic dimensions, so it goes blurry on high-DPI mobile
-     screens. pill-mobile.svg replaces that conic gradient with a
-     plain SVG linear gradient on the rim path, so the pill renders
-     pixel-sharp at any DPI. Width / aspect / padding inherited
-     from desktop. */
+  /* Pill on mobile uses a PNG (assets/pill-mobile.png) supplied by
+     the client — a pre-rasterized version of the Figma glass pill.
+     Bypasses the foreignObject conic-gradient pixelation issue that
+     the desktop pill.svg has on high-DPR phones. PNG is sharp at
+     the displayed size, no rasterization quirks. Width / aspect /
+     padding inherited from desktop. */
   .pill {
-    background: url('assets/pill-mobile.svg') center / 100% 100% no-repeat;
+    background: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
   }
 
   /* .pill-fx rainbow halo and .pill::after specular are touch-no-ops
