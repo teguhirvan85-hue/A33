@@ -101,8 +101,10 @@ img {
 
 /* === Auto-animation infrastructure (mobile only) ===================
    @property declarations enable smooth interpolation of CSS custom
-   properties via @keyframes. Without these, --auto-x etc. would snap
-   between keyframe values instead of animating smoothly. */
+   properties via @keyframes. --auto-opacity is animated alongside
+   position to simulate a "phantom cursor" fading in as it enters
+   the chrome/pill area and fading out as it leaves — matching the
+   feel of the desktop proximity-based cursor effect. */
 @property --auto-x {
   syntax: "<percentage>";
   inherits: false;
@@ -123,21 +125,32 @@ img {
   inherits: false;
   initial-value: 50%;
 }
-
-/* Chrome highlight sweep — figure-eight-ish path across the A33 letters */
-@keyframes chrome-auto-sweep {
-  0%   { --auto-x: 15%; --auto-y: 40%; }
-  25%  { --auto-x: 50%; --auto-y: 20%; }
-  50%  { --auto-x: 85%; --auto-y: 55%; }
-  75%  { --auto-x: 50%; --auto-y: 80%; }
-  100% { --auto-x: 15%; --auto-y: 40%; }
+@property --auto-opacity {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 
-/* Pill specular sweep — left-to-right glide across the pill */
+/* Chrome highlight sweep — figure-eight path with fade in/out at
+   each end of the cycle to simulate a phantom cursor entering and
+   exiting the chrome area (mimics desktop --chrome-active behavior). */
+@keyframes chrome-auto-sweep {
+  0%   { --auto-x: 15%; --auto-y: 40%; --auto-opacity: 0; }
+  12%  { --auto-opacity: 1; }
+  25%  { --auto-x: 50%; --auto-y: 20%; --auto-opacity: 1; }
+  50%  { --auto-x: 85%; --auto-y: 55%; --auto-opacity: 1; }
+  75%  { --auto-x: 50%; --auto-y: 80%; --auto-opacity: 1; }
+  88%  { --auto-opacity: 1; }
+  100% { --auto-x: 15%; --auto-y: 40%; --auto-opacity: 0; }
+}
+
+/* Pill specular sweep — left-to-right with fade in/out at edges */
 @keyframes pill-auto-sweep {
-  0%   { --auto-px:  -5%; --auto-py: 45%; }
-  50%  { --auto-px: 105%; --auto-py: 55%; }
-  100% { --auto-px:  -5%; --auto-py: 45%; }
+  0%   { --auto-px:  -5%; --auto-py: 45%; --auto-opacity: 0; }
+  15%  { --auto-opacity: 1; }
+  50%  { --auto-px: 105%; --auto-py: 55%; --auto-opacity: 1; }
+  85%  { --auto-opacity: 1; }
+  100% { --auto-px:  -5%; --auto-py: 45%; --auto-opacity: 0; }
 }
 
 /* ---------- Stage ---------- */
@@ -556,7 +569,11 @@ img {
     display: none;
   }
 
-  /* Pill auto-animated specular — left↔right glide across pill */
+  /* === Pill ::after: AUTO-animation (phantom cursor sweep) ===========
+     Uses the same gradient params as desktop pill::after (180px radius
+     scaled to 0.8× = 144px; same rgba 0.95 → transparent 70%; same
+     screen blend) so the visual feel matches desktop's cursor specular.
+     --auto-opacity animates 0↔1 at keyframe edges for phantom in/out. */
   .pill::after {
     display: block;
     content: "";
@@ -564,21 +581,46 @@ img {
     inset: 0;
     pointer-events: none;
     background: radial-gradient(
-      circle 110px at var(--auto-px, 50%) var(--auto-py, 50%),
-      rgba(255, 255, 255, 0.55),
+      circle 144px at var(--auto-px, 50%) var(--auto-py, 50%),
+      rgba(255, 255, 255, 0.95),
       rgba(255, 255, 255, 0) 70%
     );
     -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
             mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
     mix-blend-mode: screen;
-    opacity: 0.85;
+    opacity: var(--auto-opacity, 0);
     animation: pill-auto-sweep 4s ease-in-out infinite;
     z-index: 1;
   }
 
-  /* Chrome auto-animated highlight — sweep across A33 rainbow rim.
-     Mask to chrome image's bright luminance so only the iridescent
-     edges catch light, not the dark interior. */
+  /* === Pill ::before: TOUCH & DRAG (real cursor) =====================
+     Layered on top of ::after via DOM order. Identical to desktop
+     pill::after — uses --pmx/--pmy from fluid.js (which fires on
+     pointermove, including touch drags on iOS/Android). Proximity
+     gated by --pill-near. */
+  .pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle 144px at var(--pmx, 50%) var(--pmy, 50%),
+      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0) 70%
+    );
+    -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
+            mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
+    mix-blend-mode: screen;
+    opacity: var(--pill-near, 0);
+    z-index: 1;
+  }
+
+  /* === Chrome ::after: AUTO-animation (phantom cursor sweep) =========
+     Gradient params match desktop chrome::after (same --highlight-r
+     formula scaled to mobile chrome size, same rgba 0.9 → transparent
+     65%, same luminance mask, same screen blend). --auto-opacity
+     animates fade-in/out at keyframe edges, mimicking the proximity-
+     decay feel of the desktop cursor effect. */
   .chrome-wrap::after {
     display: block;
     content: "";
@@ -586,9 +628,12 @@ img {
     inset: 0;
     pointer-events: none;
     z-index: 3;
+    /* 14.8% of chrome width (245.89vw) = 36.4vw — same proportional
+       ratio as desktop's min(320px, chromeW × 0.148). */
+    --highlight-r: 36.4vw;
     background: radial-gradient(
-      circle 220px at var(--auto-x, 50%) var(--auto-y, 50%),
-      rgba(255, 255, 255, 0.85),
+      circle var(--highlight-r) at var(--auto-x, 50%) var(--auto-y, 50%),
+      rgba(255, 255, 255, 0.9),
       transparent 65%
     );
     -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
@@ -596,8 +641,33 @@ img {
     -webkit-mask-mode: luminance;
             mask-mode: luminance;
     mix-blend-mode: screen;
-    opacity: 0.75;
+    opacity: var(--auto-opacity, 0);
     animation: chrome-auto-sweep 6s ease-in-out infinite;
+  }
+
+  /* === Chrome ::before: TOUCH & DRAG (real cursor) ===================
+     Identical to desktop chrome-wrap::after — radial gradient at
+     --ccx/--ccy (set by fluid.js from pointermove), proximity-gated
+     by --chrome-active. Stacks above auto via DOM order; mix-blend
+     screen so it adds to the auto sweep when both are active. */
+  .chrome-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    --highlight-r: 36.4vw;
+    background: radial-gradient(
+      circle var(--highlight-r) at var(--ccx, -1000px) var(--ccy, -1000px),
+      rgba(255, 255, 255, 0.9),
+      transparent 65%
+    );
+    -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+            mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+    -webkit-mask-mode: luminance;
+            mask-mode: luminance;
+    mix-blend-mode: screen;
+    opacity: var(--chrome-active, 0);
   }
 
   /* Tagline hidden — Figma 11448:102 has no tagline on mobile */
