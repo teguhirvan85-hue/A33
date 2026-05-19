@@ -399,71 +399,70 @@ img {
    ==================================================================== */
 
 /* ---------- Phone & narrow tablet (≤720px wide) ---------------------
-   Layout matches Figma 11488:94 (iPhone 16 & 17 Pro Max - 1) — canvas
-   440×952. All positions convert: x/width as %vw of 440, y/height as
-   %svh of 952. svh so the layout fits iOS Safari's visible area.
+   Layout matches Figma 11448:102 (V2) — canvas 440×952. All positions
+   convert: x/width as %vw of 440, y/height as %svh of 952. svh so
+   the layout fits iOS Safari's visible area.
 
    Differences from desktop:
-   - Logo top-LEFT (not centered)
-   - CTA cluster anchored left (not centered)
-   - Pill 290×66 with CSS glass effect (no SVG)
-   - Tagline VISIBLE
-   - Contact text 23px
-   - Legal bottom-LEFT, left-aligned
+   - Logo CENTERED at top
+   - CTA cluster CENTERED at (80, 115), width 280
+   - Pill 280 wide, padding 12/10 (height auto = 52)
+   - Tagline HIDDEN
+   - Contact text 24px, icons 24×24
+   - Legal bottom-CENTERED
    - Chrome bottom-anchored, capped by svh to never clip
 */
 @media (max-width: 720px) {
   :root {
     /* Brand top — 39/952 = 4.1svh */
     --pad-y: 4.1svh;
-    /* CTA cluster width — Figma 11488:116: 290 */
-    --cta-width: min(290px, 86vw);
+    /* CTA cluster width — Figma 11448:122: 280 */
+    --cta-width: min(280px, 86vw);
     /* Reset desktop-pin variables that bleed in */
     --logo-w: min(162px, 36.82vw);
-    --contact-text: 23px;
+    --contact-text: 24px;
     --legal-text: 11px;
   }
 
-  /* Logo top-LEFT (Figma 11488:103: left 34, top 39, w 162×h 33).
-     34/440 = 7.73vw. max() with safe-area-inset-* so logo stays clear
-     of notch / Dynamic Island and left-side safe area. */
+  /* Logo CENTERED at top (Figma 11448:110: left 50% with translateX(-50%),
+     top 39, w 162×h 33). max() with safe-area-inset-top so logo stays
+     clear of iPhone notch / Dynamic Island. */
   .brand {
     position: absolute;
     top: max(calc(env(safe-area-inset-top) + 8px), var(--pad-y));
-    left: max(calc(env(safe-area-inset-left) + 12px), 7.73vw);
-    transform: none;
+    left: 50%;
+    transform: translateX(-50%);
     padding: 0;
   }
 
-  /* CTA cluster — Figma 11488:115: left 75, top 159, w 290.
-     75/440 = 17.05vw, 159/952 = 16.70svh. Anchored top-left. */
+  /* CTA cluster CENTERED — Figma 11448:122: left 80, top 115, w 280.
+     80 = (440-280)/2 so the cluster is horizontally centered.
+     115/952 = 12.08svh. */
   .cta {
     position: absolute;
-    top: 16.70svh;
-    left: max(calc(env(safe-area-inset-left) + 12px), 17.05vw);
+    top: 12.08svh;
+    left: 50%;
     right: auto;
-    transform: none;
+    transform: translateX(-50%);
     margin: 0;
     gap: 30px;
-    width: 290px;
+    width: 280px;
     align-items: center;
   }
 
-  /* Pill→tagline gap — Figma: pill bottom 225, tagline top 227 → 2px */
-  .cta-head {
-    gap: 2px;
-  }
-
-  /* Pill — Figma 11488:116: w 290 × h 66 with glass-pill image.
-     CSS approximation with rgba 0.08 + 3 inset shadows. Padding 0 +
-     flex centering so text 28 sits at vertical middle of 66px box. */
+  /* Pill — Figma 11448:123 mobile variant:
+     - w 280 (= --cta-width), padding 12/10, height auto = 52
+     - bg rgba(255,255,255,0.08)
+     - radius 100
+     - 3 inset shadows for the glass look
+     - no SVG, no rainbow halo, no drop-shadow filter */
   .pill {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 100px;
     aspect-ratio: auto;
-    width: 290px;
-    height: 66px;
-    padding: 0;
+    width: 280px;
+    height: auto;
+    padding: 12px 10px;
     filter: none;
     box-shadow:
       inset 0 2px 3px rgba(255, 255, 255, 0.24),
@@ -486,24 +485,21 @@ img {
     font-size: 28px;
   }
 
-  /* Tagline VISIBLE on mobile per Figma 11488:118: "But still buying
-     houses", 20px, centered. Re-enables what the older mobile design
-     hid; this iPhone 17 Pro Max design shows it. */
+  /* Tagline HIDDEN on V2 mobile design — Figma 11448:102 doesn't show
+     "But still buying houses" on mobile, only the pill + contacts. */
   .tagline {
-    display: block;
-    font-size: 20px;
-    color: #fff;
-    text-align: center;
+    display: none;
   }
 
-  /* Legal — Figma 11488:132: bottom-LEFT, left-aligned text.
-     left 3.86vw, bottom buffer for home indicator. */
+  /* Legal — Figma 11448:140: bottom-CENTERED, ~18 from bottom.
+     left 50% with translateX(-50%) for centering. Buffer with
+     safe-area-inset-bottom for home indicator on iOS. */
   .legal {
     bottom: max(calc(env(safe-area-inset-bottom) + 16px), 20px);
     right: auto;
-    left: max(calc(env(safe-area-inset-left) + 12px), 3.86vw);
-    transform: none;
-    text-align: left;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
     padding: 0;
     white-space: nowrap;
   }
