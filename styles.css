@@ -135,12 +135,16 @@ img {
 }
 
 @media (max-width: 720px) {
+  /* Mobile glow — Figma 11448:103 frame inside V2 (canvas 440×952):
+     left -88, width 670, top 365, height 627.
+     -88/440 = -20vw, 670/440 = 152.3vw, 365/952 = 38.34vh, 627/952 = 65.86vh */
   .glow {
-    left: -10%;
-    right: 0;
-    top: auto;
-    bottom: 0;
-    height: 40%;
+    left: -20vw;
+    width: 152.3vw;
+    top: 38.34vh;
+    height: 65.86vh;
+    right: auto;
+    bottom: auto;
   }
 }
 
@@ -392,63 +396,107 @@ img {
    - landscape phone (height ≤ 500px): compact mode
    ==================================================================== */
 
-/* ---------- Phone & narrow tablet (≤720px wide): stacked ---------- */
+/* ---------- Phone & narrow tablet (≤720px wide) ---------------------
+   Layout matches Figma 11448:102 (V2) — canvas 440×952. All positions
+   convert directly: x/width as %vw of 440, y/height as %vh of 952.
+
+   Key differences from desktop:
+   - Logo centered horizontally (not top-left)
+   - Pill+contacts cluster centered, no tagline
+   - Pill uses simpler CSS bg (rgba 0.08 + inset shadows), no SVG/rainbow
+   - Legal centered at bottom (not right-aligned)
+   - Chrome image larger (284vw) and positioned by top, not bottom
+*/
 @media (max-width: 720px) {
   :root {
-    --pad-x: clamp(20px, 6vw, 36px);
-    --pad-y: clamp(28px, 5vh, 48px);
-    --cta-width: min(86vw, 280px);
-    /* Larger contact gap on mobile to match Figma 11403:44 */
-    --gap-cta: clamp(20px, 4vh, 30px);
+    /* Logo top — 39/952 = 4.1vh */
+    --pad-y: 4.1vh;
+    /* CTA cluster width — fixed at Figma 280px (caps on narrow phones) */
+    --cta-width: min(280px, 86vw);
+    /* Reset desktop-pin variables that bleed in */
+    --logo-w: min(162px, 36.82vw);
+    --contact-text: 24px;
+    --legal-text: 11px;
   }
 
-  /* Logo top-CENTER (Figma 11403:44: left:50% with translateX(-50%), top:39px) */
+  /* Logo centered (Figma 11448:110: -translate-x-1/2 left-1/2 top-39 w-162) */
   .brand {
     position: absolute;
-    top: var(--pad-y);
+    top: var(--pad-y);            /* 4.1vh = 39 at 952vh */
     left: 50%;
     transform: translateX(-50%);
     padding: 0;
   }
 
-  /* CTA cluster centered horizontally below the logo. Pill + contacts
-     stacked with --gap-cta. No tagline on mobile. */
+  /* CTA cluster — Figma 11448:122: top-115 left-80 w-280, gap-30 */
   .cta {
     position: absolute;
-    top: calc(var(--pad-y) + 50px); /* below logo */
+    top: 12.08vh;                  /* 115/952 */
     right: auto;
     left: 50%;
     transform: translateX(-50%);
     margin: 0;
+    gap: 30px;
+    width: 280px;
   }
 
-  /* Tagline hidden on mobile per Figma 11403:44 */
+  /* Pill — Figma 11448:123 mobile variant:
+     - bg rgba(255,255,255,0.08)  (desktop is 0.14)
+     - radius 100
+     - inset shadows: top white 24%, bottom rim 12% + 2%
+     - no SVG, no rainbow halo, no drop-shadow filter */
+  .pill {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    aspect-ratio: auto;
+    padding: 12px 10px;
+    filter: none;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.24),
+      inset 0 -8px 14px rgba(255, 255, 255, 0.12),
+      inset 0 -8px 1px rgba(255, 255, 255, 0.02);
+  }
+
+  /* Hide hover-only rainbow halo on touch devices */
+  .pill-fx {
+    display: none;
+  }
+
+  /* Hide cursor-tracked specular on touch (no cursor anyway) */
+  .pill::after {
+    display: none;
+  }
+
+  /* Pill text matches Figma 28px */
+  .pill > span {
+    font-size: 28px;
+  }
+
   .tagline {
     display: none;
   }
 
-  /* Legal bottom-right on mobile — bump above iOS Safari's bottom chrome. */
+  /* Legal — Figma 11448:140: bottom-centered (~18 from bottom, font 11
+     #7c7c7c). nowrap keeps each line on one row even on narrow phones.
+     On iOS push above safe-area-inset-bottom for home indicator. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), clamp(12px, 2vh, 20px));
-    right: clamp(16px, 4vw, 24px);
-    left: auto;
-    text-align: right;
+    bottom: max(env(safe-area-inset-bottom), 1.88vh);
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
     padding: 0;
+    white-space: nowrap;
   }
 
-  /* Chrome image bigger and pushed lower on mobile (Figma: width 285vw,
-     left -60vw, top 50% which → bottom ≈ -17%). On iOS Safari the chrome
-     image is pulled up by safe-area-inset so the visible portion of letters
-     isn't covered by the address bar / home indicator. */
+  /* Chrome image — Figma 11488:149: w-1251 h-592 left:-265 top:442
+     on canvas 440×952. Reset desktop's translateX + top: 32% overrides. */
   .chrome-wrap {
-    width: 285%;
-    left: -60%;
-    bottom: calc(-17% + env(safe-area-inset-bottom));
-  }
-
-  /* Glow also pulled up so the gradient floor sits above browser chrome. */
-  .glow {
-    bottom: env(safe-area-inset-bottom);
+    width: 284.3vw;                /* 1251/440 */
+    left: -60.23vw;                 /* -265/440 */
+    top: 46.43vh;                  /* 442/952 */
+    bottom: auto;
+    transform: none;
   }
 }
 
