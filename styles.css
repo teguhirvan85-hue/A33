@@ -361,7 +361,10 @@ img {
 /* ---------- Legal (bottom-right on desktop, centered on mobile) ---------- */
 .legal {
   position: absolute;
-  bottom: clamp(14px, 1.6vh + 6px, 24px);
+  /* env(safe-area-inset-bottom) pushes the text above iOS Safari's
+     bottom browser chrome / home indicator. max() ensures it's never
+     less than the original spacing. */
+  bottom: max(env(safe-area-inset-bottom), clamp(14px, 1.6vh + 6px, 24px));
   right: clamp(14px, 1.6vw + 6px, 28px);
   z-index: 4;
   text-align: right;
@@ -421,9 +424,9 @@ img {
     background-color: rgba(255, 255, 255, 0.08);
   }
 
-  /* Legal bottom-right on mobile */
+  /* Legal bottom-right on mobile — bump above iOS Safari's bottom chrome. */
   .legal {
-    bottom: clamp(12px, 2vh, 20px);
+    bottom: max(env(safe-area-inset-bottom), clamp(12px, 2vh, 20px));
     right: clamp(16px, 4vw, 24px);
     left: auto;
     text-align: right;
@@ -431,11 +434,18 @@ img {
   }
 
   /* Chrome image bigger and pushed lower on mobile (Figma: width 285vw,
-     left -60vw, top 50% which → bottom ≈ -17%). */
+     left -60vw, top 50% which → bottom ≈ -17%). On iOS Safari the chrome
+     image is pulled up by safe-area-inset so the visible portion of letters
+     isn't covered by the address bar / home indicator. */
   .chrome-wrap {
     width: 285%;
     left: -60%;
-    bottom: -17%;
+    bottom: calc(-17% + env(safe-area-inset-bottom));
+  }
+
+  /* Glow also pulled up so the gradient floor sits above browser chrome. */
+  .glow {
+    bottom: env(safe-area-inset-bottom);
   }
 }
 
