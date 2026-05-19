@@ -481,10 +481,11 @@ img {
   }
 
   /* Legal — Figma 11448:140: bottom-CENTERED, ~18 from bottom.
-     left 50% with translateX(-50%) for centering. Buffer with
-     safe-area-inset-bottom for home indicator on iOS. */
+     Tighter bottom spacing per client — legal sits closer to the
+     viewport edge. env(safe-area-inset-bottom) still adds clearance
+     for the iOS home indicator when present. */
   .legal {
-    bottom: max(calc(env(safe-area-inset-bottom) + 16px), 20px);
+    bottom: max(env(safe-area-inset-bottom), 8px);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
