@@ -450,32 +450,20 @@ img {
     align-items: center;
   }
 
-  /* Pill — Figma 11448:123 mobile variant:
-     - w 280 (= --cta-width), padding 12/10, height auto = 52
-     - bg rgba(255,255,255,0.08)
-     - radius 100
-     - 3 inset shadows for the glass look
-     - no SVG, no rainbow halo, no drop-shadow filter */
-  .pill {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 100px;
-    aspect-ratio: auto;
-    width: 280px;
-    height: auto;
-    padding: 12px 10px;
-    filter: none;
-    box-shadow:
-      inset 0 2px 3px rgba(255, 255, 255, 0.24),
-      inset 0 -8px 14px rgba(255, 255, 255, 0.12),
-      inset 0 -8px 1px rgba(255, 255, 255, 0.02);
-  }
+  /* Pill — inherits the desktop styling per client direction: same
+     assets/pill.svg background, aspect-ratio 284:59, padding 12/10,
+     and drop-shadow filter. Width comes from --cta-width (280 on
+     mobile) via the desktop `width: 100%` rule, so the rendered pill
+     is 280 × 58.17 with the same glass SVG as desktop. No mobile-
+     specific overrides needed here.
 
-  /* Hide hover-only rainbow halo on touch devices */
+     The .pill-fx rainbow halo only animates on @media (hover: hover),
+     so it stays invisible on touch — but we display:none it anyway
+     to skip the extra SVG rendering cost. Same for .pill::after, the
+     cursor-tracked specular, which has no input on touch devices. */
   .pill-fx {
     display: none;
   }
-
-  /* Hide cursor-tracked specular on touch (no cursor anyway) */
   .pill::after {
     display: none;
   }
