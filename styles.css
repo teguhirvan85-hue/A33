@@ -239,12 +239,18 @@ img {
 }
 
 /* "Under Renovation" glass pill */
+/* Pill — matches Figma node 11450:185 spec exactly:
+   - padding: 12px 10px
+   - bg: rgba(255,255,255,0.08)
+   - border-radius: 100px
+   - text: 28px (set on .pill span)
+   - triple inset glass shadows */
 .pill {
   position: relative;
   width: 100%;
-  padding: clamp(10px, 0.8vh + 6px, 14px) clamp(10px, 1vw, 16px);
+  padding: 12px 10px;
   border-radius: 100px;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow:
@@ -301,7 +307,7 @@ img {
 }
 
 .pill span {
-  font-size: var(--pill-text);
+  font-size: 28px;
   font-weight: 400;
   line-height: 1;
   color: #fff;
@@ -417,11 +423,6 @@ img {
   /* Tagline hidden on mobile per Figma 11403:44 */
   .tagline {
     display: none;
-  }
-
-  /* Lower-opacity pill bg on mobile per Figma 11403:44 (rgba 0.08) */
-  .pill {
-    background-color: rgba(255, 255, 255, 0.08);
   }
 
   /* Legal bottom-right on mobile — bump above iOS Safari's bottom chrome. */
