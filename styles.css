@@ -445,15 +445,15 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Brand top — raised per client. Was 13.76svh (Figma 131/952) but
-       on real Safari this leaves too much empty space above the logo.
-       6svh is ~36px at svh=600, ~48px at 800. */
+    /* Brand top — raised per client */
     --pad-y: 6svh;
-    /* CTA cluster width — Figma 11448:122: 280 */
-    --cta-width: min(280px, 86vw);
-    /* Reset desktop-pin variables that bleed in */
-    --logo-w: min(162px, 36.82vw);
-    --contact-text: 24px;
+    /* All UI scaled 0.9× per client. Figma base values × 0.9:
+       - logo 162 → 145.8
+       - cta-width 280 → 252
+       - contact-text 24 → 21.6 */
+    --cta-width: min(252px, 86vw);
+    --logo-w: min(145.8px, 33.14vw);
+    --contact-text: 21.6px;
     --legal-text: 11px;
   }
 
@@ -468,9 +468,8 @@ img {
     padding: 0;
   }
 
-  /* CTA cluster CENTERED — raised per client. Was 21.74svh (Figma
-     207/952) but real-Safari rendering felt too low. Kept the Figma
-     gap-to-logo ratio: logo top + ~9svh down to CTA top. */
+  /* CTA cluster CENTERED — raised per client. Width 252 (= 280×0.9)
+     to match the 0.9× UI scale. Gap pill→contacts: 30×0.9 = 27. */
   .cta {
     position: absolute;
     top: 15svh;
@@ -478,19 +477,26 @@ img {
     right: auto;
     transform: translateX(-50%);
     margin: 0;
-    gap: 30px;
-    width: 280px;
+    gap: 27px;
+    width: 252px;
     align-items: center;
   }
 
   /* Pill on mobile uses a PNG (assets/pill-mobile.png) supplied by
-     the client — a pre-rasterized version of the Figma glass pill.
-     Bypasses the foreignObject conic-gradient pixelation issue that
-     the desktop pill.svg has on high-DPR phones. PNG is sharp at
-     the displayed size, no rasterization quirks. Width / aspect /
-     padding inherited from desktop. */
+     the client. Padding scaled 0.9× from desktop (12/10 → 10.8/9). */
   .pill {
     background: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
+    padding: 10.8px 9px;
+  }
+
+  /* Pill text scaled 0.9× from desktop 28 → 25.2 */
+  .pill > span {
+    font-size: 25.2px;
+  }
+
+  /* Contacts row gap scaled 0.9× (24 → 21.6) */
+  .contacts {
+    gap: 21.6px;
   }
 
   /* .pill-fx rainbow halo and .pill::after specular are touch-no-ops
@@ -500,11 +506,6 @@ img {
   }
   .pill::after {
     display: none;
-  }
-
-  /* Pill text matches Figma 28px */
-  .pill > span {
-    font-size: 28px;
   }
 
   /* Tagline HIDDEN on V2 mobile design — Figma 11448:102 doesn't show
