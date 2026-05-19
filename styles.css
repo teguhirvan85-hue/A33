@@ -20,7 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
-  min-height: 100dvh;
+  min-height: 100svh;
 }
 
 a {
@@ -108,7 +108,7 @@ img {
 .stage {
   position: relative;
   width: 100%;
-  min-height: 100dvh;
+  min-height: 100svh;
   overflow: hidden;
 }
 
@@ -143,8 +143,8 @@ img {
   .glow {
     left: -20vw;
     width: 152.3vw;
-    top: 38.34dvh;
-    height: 65.86dvh;
+    top: 38.34svh;
+    height: 65.86svh;
     right: auto;
     bottom: auto;
   }
@@ -411,10 +411,10 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Logo top — 39/952 = 4.1dvh. dvh = dynamic viewport height, which
+    /* Logo top — 39/952 = 4.1svh. dvh = dynamic viewport height, which
        accounts for iOS Safari's URL bar showing/hiding. Using vh here
        would position the logo above the URL bar (hidden) on Safari. */
-    --pad-y: 4.1dvh;
+    --pad-y: 4.1svh;
     /* CTA cluster width — fixed at Figma 280px (caps on narrow phones) */
     --cta-width: min(280px, 86vw);
     /* Reset desktop-pin variables that bleed in */
@@ -439,7 +439,7 @@ img {
      below the logo even when the logo is pushed down by the safe area. */
   .cta {
     position: absolute;
-    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 8.06dvh);
+    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 8.06svh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -490,7 +490,7 @@ img {
      excludes the toolbar). max() with env(safe-area-inset-bottom) adds
      extra clearance for the home indicator when the toolbar is hidden. */
   .legal {
-    bottom: max(calc(env(safe-area-inset-bottom) + 8px), 1.88dvh);
+    bottom: max(calc(env(safe-area-inset-bottom) + 16px), 20px);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -506,7 +506,7 @@ img {
   .chrome-wrap {
     width: 284.3vw;                /* 1251/440 */
     left: -60.23vw;                 /* -265/440 */
-    top: 46.43dvh;                  /* 442/952 */
+    top: 46.43svh;                  /* 442/952 */
     bottom: auto;
     transform: none;
   }
