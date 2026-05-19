@@ -430,77 +430,84 @@ img {
    ==================================================================== */
 
 /* ---------- Phone & narrow tablet (≤720px wide) ---------------------
-   Layout matches Figma 11448:102 (V2) — canvas 440×952. All positions
-   convert: x/width as %vw of 440, y/height as %svh of 952. svh so
-   the layout fits iOS Safari's visible area.
+   PURE FIGMA 11448:102 (V2) REBUILD — canvas 440×952.
+   Every position/size matches the Figma frame exactly: x/width as %vw
+   of 440, y/height as %svh of 952. No scaling, no svh caps, no raised
+   positions — exact Figma values only.
 
-   Differences from desktop:
-   - Logo CENTERED at top
-   - CTA cluster CENTERED at (80, 115), width 280
-   - Pill 280 wide, padding 12/10 (height auto = 52)
-   - Tagline HIDDEN
-   - Contact text 24px, icons 24×24
-   - Legal bottom-CENTERED
-   - Chrome bottom-anchored, capped by svh to never clip
+   - Logo: centered, top 131 = 13.76svh, 162×33
+   - CTA cluster: centered, top 207 = 21.74svh, w 280, gap 30
+   - Pill: 280×~52, rgba(255,255,255,0.08) + 3 inset shadows (per
+     Figma's CSS — not the desktop SVG, no PNG)
+   - Pill text: 28px SF Pro Regular
+   - Contacts: row gap 24, each item gap 8, text 24px, icon 24×24
+   - Tagline: hidden
+   - Chrome: w 1081.93 = 245.89vw, left -193 = -43.86vw,
+             top 329 = 34.56svh, h 511.9 = 53.77svh
+   - Glow: 2 ellipse PNGs (assets/glow-1.png, glow-2.png) at Figma
+           positions per 11494:168 + 11495:261
+   - Legal: bottom 12.87svh, centered, 11px #7c7c7c
 */
 @media (max-width: 720px) {
   :root {
-    /* Brand top — raised per client */
-    --pad-y: 6svh;
-    /* All UI scaled 0.9× per client. Figma base values × 0.9:
-       - logo 162 → 145.8
-       - cta-width 280 → 252
-       - contact-text 24 → 21.6 */
-    --cta-width: min(252px, 86vw);
-    --logo-w: min(145.8px, 33.14vw);
-    --contact-text: 21.6px;
+    /* Logo top — Figma 131/952 = 13.76svh */
+    --pad-y: 13.76svh;
+    --cta-width: 280px;
+    --logo-w: 162px;
+    --contact-text: 24px;
     --legal-text: 11px;
   }
 
-  /* Logo CENTERED at top (Figma 11448:110: left 50% with translateX(-50%),
-     top 39, w 162×h 33). max() with safe-area-inset-top so logo stays
-     clear of iPhone notch / Dynamic Island. */
+  /* Logo — Figma 11448:110: centered, top 131, 162×33 */
   .brand {
     position: absolute;
-    top: max(calc(env(safe-area-inset-top) + 8px), var(--pad-y));
+    top: var(--pad-y);
     left: 50%;
     transform: translateX(-50%);
     padding: 0;
   }
 
-  /* CTA cluster CENTERED — raised per client. Width 252 (= 280×0.9)
-     to match the 0.9× UI scale. Gap pill→contacts: 30×0.9 = 27. */
+  /* CTA cluster — Figma 11448:122: left 80, top 207, w 280, gap 30.
+     80 = (440-280)/2 horizontally centered. */
   .cta {
     position: absolute;
-    top: 15svh;
+    top: 21.74svh;
     left: 50%;
     right: auto;
     transform: translateX(-50%);
     margin: 0;
-    gap: 27px;
-    width: 252px;
+    gap: 30px;
+    width: 280px;
     align-items: center;
   }
 
-  /* Pill on mobile uses a PNG (assets/pill-mobile.png) supplied by
-     the client. Padding scaled 0.9× from desktop (12/10 → 10.8/9). */
+  /* Pill — Figma 11448:123: rgba(255,255,255,0.08) bg, rounded 100,
+     padding 12/10, three inset shadows. No SVG, no PNG, no filter. */
   .pill {
-    background: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
-    padding: 10.8px 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 100px;
+    aspect-ratio: auto;
+    width: 280px;
+    height: auto;
+    padding: 12px 10px;
+    filter: none;
+    box-shadow:
+      inset 0 2px 3px rgba(255, 255, 255, 0.24),
+      inset 0 -8px 14px rgba(255, 255, 255, 0.12),
+      inset 0 -8px 1px rgba(255, 255, 255, 0.02);
   }
 
-  /* Pill text scaled 0.9× from desktop 28 → 25.2 */
+  /* Pill text — Figma 11448:124: 28px SF Pro Regular */
   .pill > span {
-    font-size: 25.2px;
+    font-size: 28px;
   }
 
-  /* Contacts row gap scaled 0.9× (24 → 21.6) */
+  /* Contacts row — Figma 11448:125: gap 24 between items */
   .contacts {
-    gap: 21.6px;
+    gap: 24px;
   }
 
-  /* .pill-fx rainbow halo and .pill::after specular are touch-no-ops
-     (hover-gated / cursor-driven); display:none skips render cost. */
+  /* Touch-no-ops for hover/cursor effects */
   .pill-fx {
     display: none;
   }
@@ -508,14 +515,24 @@ img {
     display: none;
   }
 
-  /* Tagline HIDDEN on V2 mobile design — Figma 11448:102 doesn't show
-     "But still buying houses" on mobile, only the pill + contacts. */
+  /* Tagline hidden — Figma 11448:102 has no tagline on mobile */
   .tagline {
     display: none;
   }
 
-  /* Legal — Figma 11448:140 updated: bottom 12.87% from canvas bottom
-     = 122.5px on 952 canvas (was 1.88% / ~18px). Moved up significantly. */
+  /* Chrome — Figma 11488:149: w 1081.93, h 511.9, left -193, top 329.
+     1081.93/440 = 245.89vw, -193/440 = -43.86vw, 329/952 = 34.56svh. */
+  .chrome-wrap {
+    width: 245.89vw;
+    left: -43.86vw;
+    top: 34.56svh;
+    bottom: auto;
+    transform: none;
+  }
+
+  /* Legal — Figma 11448:140: centered, bottom 12.87% of canvas.
+     12.87% × 952 = 122.5px from canvas bottom.
+     env-safe-bottom wins on iOS devices with home indicator. */
   .legal {
     bottom: max(env(safe-area-inset-bottom), 12.87svh);
     right: auto;
@@ -524,28 +541,6 @@ img {
     text-align: center;
     padding: 0;
     white-space: nowrap;
-  }
-
-  /* Chrome image — Figma 11448:102 updated.
-     Width capped by BOTH vw and svh so chrome stays the same Figma
-     proportion of the visible area at every viewport. Without the
-     svh cap, on iOS Safari with bars (visible area shorter than the
-     952 canvas) the chrome occupies a much larger % of svh than
-     Figma intends — visually dominant and over-clipped.
-
-     Figma at 440×952: chrome 1081.93 × 511.9. Chrome height ratio
-     to canvas = 511.9 / 952 = 53.77%. Therefore chrome width =
-     53.77svh × 2327/1101 = 113.62svh.
-
-     min(245.89vw, 113.62svh): at Figma canvas 440×952, vw wins
-     (1082 ≈ 1082, Figma exact). At Safari 440×800 svh, svh wins
-     (chrome 909, ~13.4% smaller — fits visible area cleanly). */
-  .chrome-wrap {
-    width: min(245.89vw, 113.62svh);
-    left: -43.86vw;
-    top: 34.56svh;
-    bottom: auto;
-    transform: none;
   }
 }
 
