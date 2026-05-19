@@ -770,7 +770,10 @@ img {
     --pad-x: min(3vw, 57.6px);              /* 57.6 / 1920 = 3.0% */
     --pad-y: min(2.5vw, 48px);              /* 48 / 1920 */
     --cta-right: min(3.385vw, 65px);
-    --legal-right: min(1.25vw, 24px);
+    /* Legal right base + 80px shift left per client (applied 1440+).
+       At 1440: 18 + 80 = 98. At 1920+: 24 + 80 = 104 (further +80
+       overridden in the >=1920 block below). */
+    --legal-right: calc(min(1.25vw, 24px) + 80px);
     --legal-bottom: min(1.198vw, 23px);
 
     /* Typography */
@@ -834,8 +837,9 @@ img {
   :root {
     --pad-x: clamp(48px, 3vw, 96px);
     --pad-y: clamp(48px, 3vh, 80px);
-    /* Legal text shifted left 80px per client (24 + 80 = 104) */
-    --legal-right: 104px;
+    /* Legal text shifted left 80px more at 1920 (1440 block already
+        adds 80 → 104; this adds another 80 → total 184 from right) */
+    --legal-right: 184px;
   }
   /* Chrome A33 raised 100px at 1920+ per client (chrome was sitting too
      low at 1920). 345.6 (Opsi B value at 1920) − 100 = 245.6px. */
