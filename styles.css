@@ -450,13 +450,15 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Logo top — raised 100px from Figma 131 → 31 = 3.26svh.
-       Logo and CTA cluster shifted together so the 43px gap between
-       them is preserved. */
+    /* Logo top — raised 100px from Figma. */
     --pad-y: 3.26svh;
-    --cta-width: 280px;
-    --logo-w: 162px;
-    --contact-text: 24px;
+    /* Logo, pill, and contact text scaled 0.8× per client (20% smaller):
+       - logo 162 → 129.6
+       - cta-width / pill width 280 → 224
+       - contact-text 24 → 19.2 */
+    --cta-width: 224px;
+    --logo-w: 129.6px;
+    --contact-text: 19.2px;
     --legal-text: 11px;
   }
 
@@ -470,31 +472,31 @@ img {
     padding: 0;
   }
 
-  /* CTA cluster — anchored to brand top + 76px (logo height 33 + Figma
-     43px gap between logo bottom and CTA top), so the cluster always
-     sits a constant distance below the (possibly safe-area-shifted)
-     logo. Raised in lockstep with --pad-y. */
+  /* CTA cluster — anchored to brand top + 70px (scaled logo height
+     26.4 + Figma 43px gap, rounded). Width 224 to match the 0.8×
+     pill scale. */
   .cta {
     position: absolute;
-    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 76px);
+    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 70px);
     left: 50%;
     right: auto;
     transform: translateX(-50%);
     margin: 0;
     gap: 30px;
-    width: 280px;
+    width: 224px;
     align-items: center;
   }
 
-  /* Pill — Figma 11448:123: rgba(255,255,255,0.08) bg, rounded 100,
-     padding 12/10, three inset shadows. No SVG, no PNG, no filter. */
+  /* Pill — Figma 11448:123 scaled 0.8× per client. Width 224, padding
+     9.6/8 (= 12/10 × 0.8). Background, radius, and inset shadows
+     unchanged from Figma. */
   .pill {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 100px;
     aspect-ratio: auto;
-    width: 280px;
+    width: 224px;
     height: auto;
-    padding: 12px 10px;
+    padding: 9.6px 8px;
     filter: none;
     box-shadow:
       inset 0 2px 3px rgba(255, 255, 255, 0.24),
@@ -502,9 +504,9 @@ img {
       inset 0 -8px 1px rgba(255, 255, 255, 0.02);
   }
 
-  /* Pill text — Figma 11448:124: 28px SF Pro Regular */
+  /* Pill text — Figma 28 × 0.8 = 22.4px */
   .pill > span {
-    font-size: 28px;
+    font-size: 22.4px;
   }
 
   /* Contacts row — Figma 11448:125: gap 24 between items */
