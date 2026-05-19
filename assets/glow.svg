@@ -2,22 +2,22 @@
 <g id="Frame 7">
 <rect width="2039" height="1242" transform="translate(436 120)" fill="black"/>
 <g id="Ellipse 1" filter="url(#filter0_f_0_58)">
-<circle cx="941" cy="941" r="421" fill="var(--fill-0, #BD7BFF)" fill-opacity="0.7"/>
+<circle cx="941" cy="941" r="421" fill="#BD7BFF" fill-opacity="0.7"/>
 </g>
 <g id="Ellipse 2" filter="url(#filter1_f_0_58)">
-<circle cx="1843" cy="941" r="421" fill="var(--fill-0, #79ADFF)" fill-opacity="0.7"/>
+<circle cx="1843" cy="941" r="421" fill="#79ADFF" fill-opacity="0.7"/>
 </g>
 </g>
 <defs>
 <filter id="filter0_f_0_58" x="0" y="0" width="1882" height="1882" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="260" result="effect1_foregroundBlur_0_58"/>
+<feGaussianBlur stdDeviation="130" result="effect1_foregroundBlur_0_58"/>
 </filter>
 <filter id="filter1_f_0_58" x="902" y="0" width="1882" height="1882" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="260" result="effect1_foregroundBlur_0_58"/>
+<feGaussianBlur stdDeviation="130" result="effect1_foregroundBlur_0_58"/>
 </filter>
 </defs>
 </svg>
