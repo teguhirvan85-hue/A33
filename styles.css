@@ -37,37 +37,64 @@ img {
    All sizing scales smoothly between phone and 4K. The clamp pattern is:
    clamp(<min on smallest screen>, <preferred = base + vw scaling>, <max>) */
 :root {
-  /* Page padding */
-  --pad-x: clamp(20px, 3.8vw, 64px);
-  --pad-y: clamp(24px, 4.2vh, 56px);
+  /* Page padding — values cap at Figma 11448:62 spec at 1728px viewport.
+     Brand uses pad-x (max 55), CTA uses its own --cta-right (max 65). */
+  --pad-x: clamp(20px, 3.2vw, 55px);
+  --pad-y: clamp(24px, 4.8vh, 52px);
+  --cta-right: clamp(20px, 3.76vw, 65px);
+  --legal-right: clamp(14px, 1.4vw, 24px);
+  --legal-bottom: clamp(14px, 1.8vh + 4px, 23px);
 
-  /* Typography */
+  /* Typography (caps match Figma desktop spec at 1728px) */
   --pill-text: clamp(18px, 1.1vw + 14px, 28px);
   --tagline: clamp(14px, 0.6vw + 12px, 20px);
   --contact-text: clamp(16px, 0.7vw + 13px, 24px);
-  --legal-text: clamp(9.5px, 0.15vw + 9px, 12px);
+  --legal-text: clamp(9.5px, 0.15vw + 9px, 11px);
 
-  /* Brand mark — preserves 162:33 aspect via width + aspect-ratio */
-  --logo-w: clamp(108px, 8vw + 60px, 180px);
+  /* Brand mark — Figma 162×33 at 1728px; preserve aspect via aspect-ratio */
+  --logo-w: clamp(108px, 9.375vw, 162px);
 
   /* Spacing */
   --gap-cta: clamp(10px, 0.8vh + 6px, 16px);
   --gap-contacts: clamp(16px, 1.4vw + 8px, 24px);
-  --cta-width: clamp(220px, 18vw + 80px, 320px);
+  /* Figma 11473:97 inner ring has 10px horizontal padding; outer adds 1px;
+     280px width fits "Under Renovation" at 28px text. */
+  --cta-width: clamp(220px, 16vw + 60px, 280px);
 }
 
-/* ---------- Fluid effect overlay ----------
-   Sits above the chrome image but below interactive UI. pointer-events:none
-   lets clicks pass through to the contact links. */
-#fluid {
-  position: fixed;
+/* ---------- Cursor-tracked reflection overlay (A33 chrome) ----------
+   Soft radial highlight that follows the cursor, CLIPPED to the chrome
+   image's alpha (only the letter shapes), so light only "catches" on the
+   actual A33 letters — not the empty space around them.
+   --ccx/--ccy are cursor X/Y in chrome-wrap-local pixels (set by fluid.js).
+   --chrome-active gates visibility based on cursor proximity to the
+   chrome-wrap bbox. */
+.chrome-wrap::after {
+  content: "";
+  position: absolute;
   inset: 0;
-  width: 100vw;
-  height: 100svh;
-  z-index: 1;
   pointer-events: none;
-  display: block;
+  z-index: 3;
+  background: radial-gradient(
+    circle 320px at var(--ccx, -1000px) var(--ccy, -1000px),
+    rgba(255, 255, 255, 0.9),
+    transparent 65%
+  );
+  /* Luminance mask: only the BRIGHT iridescent rainbow edges of the
+     chrome image let the highlight through. Dark interior fills and
+     the transparent background block it, so the cursor "catches"
+     only on the colourful chromatic rim. */
+  -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+          mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+  -webkit-mask-mode: luminance;
+          mask-mode: luminance;
   mix-blend-mode: screen;
+  opacity: var(--chrome-active, 0);
+}
+
+@media (max-width: 720px) {
+  /* Skip the reflection overlay on touch devices — no cursor to track. */
+  .chrome-wrap::after { display: none; }
 }
 
 /* ---------- Stage ---------- */
@@ -78,75 +105,50 @@ img {
   overflow: hidden;
 }
 
-/* ---------- Rectangle glow strip (rainbow bg under the letters) ----------
-   Uses the Figma rectangle-bg.png — a soft horizontal gradient (purple-left,
-   blue-right) sitting under the chrome letters to give the floor an
-   atmospheric tint, matching the Figma reference. */
+/* ---------- Glow background (Figma 11448:63/66 frame7/8) ----------
+   Two heavily-blurred circles (purple-left, blue-right) creating a soft
+   coloured haze under the chrome letters. SVG source from Figma — circles
+   are rendered with feGaussianBlur stdDeviation=260 inside the SVG. */
 .glow {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 55%;
+  /* Matches Figma 11448:63 frame7: left:-60 w:2039 top:587 h:1242 on
+     a 1728×1117 canvas. Horizontal: -60/1728=-3.5%, 2039/1728=118%.
+     Vertical: 587/1117=52.55%, 1242/1117=111.2%. */
+  left: -3.5%;
+  width: 118%;
+  top: 52.55%;
+  height: 111.2%;
   z-index: 0;
   pointer-events: none;
-  background: url('assets/rectangle-bg.png') no-repeat center bottom;
-  background-size: 121% auto;
-  opacity: 0.85;
-}
-
-@media (min-width: 1900px) {
-  .glow {
-    bottom: 0;
-    height: 55%;
-    background-size: 121% auto;
-    background-position: center bottom;
-  }
+  background: url('assets/glow.svg') no-repeat center / 100% 100%;
 }
 
 @media (max-width: 720px) {
   .glow {
+    left: -10%;
+    right: 0;
+    top: auto;
     bottom: 0;
-    height: 38%;
-    background-size: 198% auto;
-    opacity: 0.7;
+    height: 40%;
   }
 }
 
-/* ---------- Chrome A33 letters (background image + glass overlays) ---------- */
+/* ---------- Chrome A33 letters (Figma 11448:173) ---------- */
 .chrome {
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
 }
-/* Layering mirrors the Under Renovation pill: glass surface sits at the
-   TOP UI layer (z:4, same as .brand / .cta / .legal), with the cursor
-   fluid canvas (z:2) and chrome base (z:1) underneath. */
-.chrome-base-layer  { z-index: 2; }
-.chrome-glass-layer { z-index: 4; }
 
-/* Wrapper that owns the chrome image's responsive position + size. The
-   chrome image and the 3 per-letter glass overlay SVGs are absolutely
-   positioned inside this wrapper. The wrapper keeps the source aspect
-   (2327/1101) so the inset percentages on the letter overlays land on
-   the correct pixels of the underlying chrome image. */
 .chrome-wrap {
   position: absolute;
   width: min(140vw, 2240px);
   aspect-ratio: 2327 / 1101;
-  /* Shift image slightly left of center (bumped from -14vw → -17vw
-     and from -13vw → -16vw at 1920+ so the visual centre of mass
-     sits closer to the viewport centre). */
-  left: max(-17vw, calc(50% - min(140vw, 2240px) / 2));
-  bottom: -37%;
-}
-
-@media (min-width: 1900px) {
-  .chrome-wrap {
-    width: min(130vw, 2500px);
-    left: max(-16vw, calc(50% - min(130vw, 2500px) / 2));
-    bottom: -32%;
-  }
+  /* Matches Figma 11448:173 at canvas 1728×1117: left -224 (≈-13vw),
+     top 357 → bottom offset = (1117-357-1061)/1117 = -26.9% ≈ -27%. */
+  left: max(-13vw, calc(50% - min(140vw, 2240px) / 2));
+  bottom: -27%;
 }
 
 /* Base chrome image — fills the wrapper. */
@@ -160,54 +162,6 @@ img {
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
-}
-
-/* Letter-shaped glass overlays. Each .letter is a div with the EXACT
-   same glass effect as .pill (Under Renovation):
-   - rgba(255,255,255,0.14) background
-   - backdrop-filter: blur(10px)
-   - triple inset shadows for the glass rim highlights
-   then clipped to the letter shape via mask-image. */
-.chrome-wrap .letter {
-  position: absolute;
-  pointer-events: none;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  box-shadow:
-    inset 0 2px 3px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -8px 14px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -8px 1px 0 rgba(255, 255, 255, 0.02);
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-          mask-position: center;
-  -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-}
-.chrome-wrap .letter-a {
-  top: 12.71%;
-  left: 5.25%;
-  width: 32.39%;
-  height: 74.81%;
-  -webkit-mask-image: url('assets/letter-a-mask.svg');
-          mask-image: url('assets/letter-a-mask.svg');
-}
-.chrome-wrap .letter-3m {
-  top: 12.86%;
-  left: 40.55%;
-  width: 24.54%;
-  height: 76.28%;
-  -webkit-mask-image: url('assets/letter-3mid-mask.svg');
-          mask-image: url('assets/letter-3mid-mask.svg');
-}
-.chrome-wrap .letter-3r {
-  top: 13.11%;
-  left: 70.02%;
-  width: 24.55%;
-  height: 76.18%;
-  -webkit-mask-image: url('assets/letter-3right-mask.svg');
-          mask-image: url('assets/letter-3right-mask.svg');
 }
 
 /* ---------- Brand mark (top-left, always) ---------- */
@@ -225,60 +179,63 @@ img {
   aspect-ratio: 162 / 33;
 }
 
-/* ---------- CTA cluster ---------- */
+/* ---------- CTA cluster (Figma 11448:81) ----------
+   Outer container: top:50, right:65, width:280, gap:30 between
+   the (pill+tagline) group and the contacts row. */
 .cta {
   position: absolute;
-  top: var(--pad-y);
-  right: var(--pad-x);
+  /* Figma 11448:81 top: 50px (brand uses 52 — 2px difference). */
+  top: clamp(22px, 4.63vh, 50px);
+  right: var(--cta-right);
   z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--gap-cta);
+  gap: 30px;
   width: var(--cta-width);
 }
 
+/* Inner group — pill + tagline with 6px gap (Figma 11448:82) */
+.cta-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
 /* "Under Renovation" glass pill */
-/* Pill — matches Figma node 11450:185 spec exactly:
+/* Pill — matches Figma desktop node 11448:83 spec:
    - padding: 12px 10px
-   - bg: rgba(255,255,255,0.08)
+   - bg: rgba(255,255,255,0.14)  ← desktop; mobile uses 0.08 (Figma 11450:185)
    - border-radius: 100px
    - text: 28px (set on .pill span)
    - triple inset glass shadows */
+/* Pill — Figma-exported SVG (assets/pill.svg) used as a stretched
+   background image. All the layered glass effects (rim, inner shadows,
+   warm bottom tint, etc.) live inside the SVG, so the CSS just needs to
+   size the box and place the text. */
 .pill {
   position: relative;
   width: 100%;
   padding: 12px 10px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow:
-    inset 0 2px 3px 0 rgba(255, 255, 255, 0.24),
-    inset 0 -8px 14px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -8px 1px 0 rgba(255, 255, 255, 0.02);
+  /* aspect-ratio matches the SVG's natural 284:59 — keeps the pill from
+     stretching weirdly at responsive widths. */
+  aspect-ratio: 284 / 59;
+  background: url('assets/pill.svg') center / 100% 100% no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  transition: background-color 240ms ease;
-  /* Establish a local stacking context so the halo's z-index:-1 stays
-     scoped inside the pill (not behind sibling elements of .pill). */
+  /* Outer drop shadow for perceived elevation above the page */
+  filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.32)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.16));
+  /* Establish a local stacking context for the cursor-specular ::after */
   isolation: isolate;
 }
 
-/* Hover state — matches Figma node 11407:2.
-   Structure mirrors the Figma file exactly:
-   1. A wider rainbow stroke (6px) sitting behind, blurred via SVG filter
-      → provides the chromatic bleed both inside AND outside the pill
-   2. A crisp 1px rainbow stroke on top → the perimeter line
-   Both strokes share a single linear gradient so colours align. */
-/* SVG element extends ±16px above/below the pill so the vertical blur
-   output has room to render (filter output gets clipped to the SVG bbox
-   in some browsers even with overflow:visible). The viewBox in the HTML
-   is enlarged to match so the rect inside still aligns with the pill bg.
-   Pill button size itself doesn't change — SVG is position:absolute so
-   the larger SVG box doesn't affect parent layout. */
+/* Rainbow stroke + halo SVG overlay — fades in on hover only.
+   Positioned absolute over the pill bg; overflow:visible lets the blurred
+   halo extend just past the pill silhouette. */
 .pill-fx {
   position: absolute;
   inset: 0;
@@ -290,20 +247,44 @@ img {
   overflow: visible;
 }
 
-/* Lift the pill text above the SVG overlay so the rainbow never
-   bleeds onto the letters. */
+@media (hover: hover) {
+  .pill:hover .pill-fx {
+    opacity: 1;
+  }
+}
+
+/* Lift the pill text above the rainbow SVG + cursor-specular overlay
+   so neither bleeds onto the letters. */
 .pill > span {
   position: relative;
   z-index: 2;
 }
 
-@media (hover: hover) {
-  .pill:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-  }
-  .pill:hover .pill-fx {
-    opacity: 1;
-  }
+/* Cursor-tracked specular highlight on the pill. --pmx/--pmy are set by
+   fluid.js as cursor X/Y RELATIVE to the pill's bounding box. The radial
+   gradient acts like a glossy reflection moving across the glass.
+   Opacity is driven by --pill-near (proximity to pill bbox). Clipped to
+   the rounded pill shape via the parent's border-radius equivalent — we
+   use mask-image of the same pill.svg so the highlight respects the
+   exact pill silhouette. */
+.pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 180px at var(--pmx, 50%) var(--pmy, 50%),
+    rgba(255, 255, 255, 0.95),
+    rgba(255, 255, 255, 0) 70%
+  );
+  -webkit-mask: url('assets/pill.svg') center / 100% 100% no-repeat;
+          mask: url('assets/pill.svg') center / 100% 100% no-repeat;
+  /* Screen blend so the highlight ADDS brightness to the dark pill bg
+     rather than just sitting on top. Combined with higher opacity above,
+     the cursor specular reads clearly even on the translucent glass. */
+  mix-blend-mode: screen;
+  opacity: var(--pill-near, 0);
+  z-index: 1;
 }
 
 .pill span {
@@ -328,7 +309,6 @@ img {
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--gap-contacts);
-  margin-top: 4px;
 }
 
 .contact {
@@ -364,14 +344,15 @@ img {
   height: 1em;
 }
 
-/* ---------- Legal (bottom-right on desktop, centered on mobile) ---------- */
+/* ---------- Legal (bottom-right) — matches Figma 11448:96 spec
+   at 1728px: right 24, bottom 23, font 11px. ---------- */
 .legal {
   position: absolute;
   /* env(safe-area-inset-bottom) pushes the text above iOS Safari's
      bottom browser chrome / home indicator. max() ensures it's never
      less than the original spacing. */
-  bottom: max(env(safe-area-inset-bottom), clamp(14px, 1.6vh + 6px, 24px));
-  right: clamp(14px, 1.6vw + 6px, 28px);
+  bottom: max(env(safe-area-inset-bottom), var(--legal-bottom));
+  right: var(--legal-right);
   z-index: 4;
   text-align: right;
   color: #7c7c7c;

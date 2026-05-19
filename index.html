@@ -10,10 +10,9 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <canvas id="fluid" aria-hidden="true"></canvas>
     <main class="stage">
-      <!-- Layer 1 (below cursor fluid): chrome iridescent base image -->
-      <div class="chrome chrome-base-layer" aria-hidden="true">
+      <!-- Chrome iridescent A33 image (Figma 11448:173) -->
+      <div class="chrome" aria-hidden="true">
         <div class="chrome-wrap">
           <picture class="chrome-base">
             <source media="(max-width: 720px)" srcset="assets/a33-chrome-mobile.png" />
@@ -21,18 +20,9 @@
           </picture>
         </div>
       </div>
-      <!-- Layer 3 (above cursor fluid): glass overlay shells per letter
-           (Figma node 11430:17). Each div has the EXACT same glass effect
-           as the Under Renovation pill (rgba bg + backdrop-filter blur +
-           triple inset shadows), clipped to the letter shape via mask. -->
-      <div class="chrome chrome-glass-layer" aria-hidden="true">
-        <div class="chrome-wrap">
-          <div class="letter letter-a"></div>
-          <div class="letter letter-3m"></div>
-          <div class="letter letter-3r"></div>
-        </div>
-      </div>
 
+      <!-- Background glow — 2 blurred circles (purple + blue) matching
+           Figma 11448:63/66 frame7/frame8. -->
       <div class="glow" aria-hidden="true"></div>
 
       <header class="brand">
@@ -40,6 +30,14 @@
       </header>
 
       <section class="cta">
+        <!-- pill + tagline grouped with gap-cta-inner (6px Figma 11448:82) -->
+        <div class="cta-head">
+        <!-- Glass pill — Figma-authored SVG (assets/pill.svg) used as
+             the background image so all the layered glass effects are
+             pixel-perfect from the source. Text is overlaid via CSS so
+             it stays accessible/selectable.
+             .pill-fx is an inline rainbow SVG (linear gradient stroke +
+             blurred halo) that fades in on hover. -->
         <div class="pill" role="status" aria-label="Site status">
           <svg
             class="pill-fx"
@@ -59,25 +57,16 @@
                 <stop offset="88%" stop-color="#ff5e2e" />
                 <stop offset="100%" stop-color="#ffae2e" />
               </linearGradient>
-              <!-- The viewBox (280×57) is stretched non-uniformly to fit the
-                   responsive pill (≈4.9:1 aspect). To keep the blur looking
-                   symmetric in rendered pixels we use a LARGER stdDeviation
-                   on the vertical axis so the top/bottom halo matches the
-                   left/right halo visually. -->
               <filter id="pill-blur" x="-20%" y="-150%" width="140%" height="400%">
                 <feGaussianBlur stdDeviation="2.5 2.5" />
               </filter>
-              <!-- Mask that allows the glow OUTSIDE the pill but blocks any
-                   bleed into the interior — keeps the pill body clean black,
-                   matching the reference. Extra vertical padding so the
-                   bigger vertical blur isn't clipped. -->
               <mask id="pill-outside-only" maskUnits="userSpaceOnUse">
                 <rect x="-60" y="-200" width="400" height="457" fill="white" />
                 <rect x="0" y="0" width="280" height="57" rx="28.5" ry="28.5" fill="black" />
               </mask>
             </defs>
             <!-- Outer halo — wide blurred rainbow stroke, masked to render
-                 ONLY outside the pill so the interior stays black. -->
+                 ONLY outside the pill so the interior stays clean. -->
             <g mask="url(#pill-outside-only)">
               <rect
                 class="pill-fx-glow"
@@ -94,7 +83,7 @@
                 vector-effect="non-scaling-stroke"
               />
             </g>
-            <!-- Crisp 1px stroke ON the perimeter -->
+            <!-- Crisp rainbow line ON the perimeter -->
             <rect
               class="pill-fx-stroke"
               x="0.5"
@@ -112,14 +101,15 @@
           <span>Under Renovation</span>
         </div>
         <p class="tagline">But still buying houses</p>
+        </div>
         <nav class="contacts" aria-label="Contact">
           <a href="tel:+61458120120" class="contact" aria-label="Call +61 458 120 120">
             <img src="assets/icon-call.svg" alt="" aria-hidden="true" class="icon" width="24" height="24" />
             <span>Call</span>
           </a>
-          <a href="mailto:hello@advisory33.com" class="contact" aria-label="Email hello@advisory33.com">
+          <a href="mailto:hello@advisory33.com" class="contact" aria-label="Mail hello@advisory33.com">
             <img src="assets/icon-email.svg" alt="" aria-hidden="true" class="icon" width="24" height="24" />
-            <span>Email</span>
+            <span>Mail</span>
           </a>
           <a href="https://instagram.com/advisory33_ba" target="_blank" rel="noopener noreferrer" class="contact" aria-label="Instagram @advisory33_ba">
             <img src="assets/icon-ig.svg" alt="" aria-hidden="true" class="icon" width="24" height="24" />
