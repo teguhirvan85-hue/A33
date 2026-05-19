@@ -532,11 +532,11 @@ img {
     transform: none;
   }
 
-  /* Legal — lowered further per client (5svh → 2svh = ~19px from
-     viewport bottom). env-safe-bottom still wins on iOS devices with
-     a home indicator (~34px) so it never overlaps the indicator. */
+  /* Legal — lowered further per client (2svh → 4px from viewport
+     bottom). env-safe-bottom still wins on iOS devices with a home
+     indicator (~34px) so it never overlaps the indicator. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 2svh);
+    bottom: max(env(safe-area-inset-bottom), 4px);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
