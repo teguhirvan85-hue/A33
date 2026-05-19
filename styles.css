@@ -450,17 +450,21 @@ img {
     align-items: center;
   }
 
-  /* Pill — inherits the desktop styling per client direction: same
-     assets/pill.svg background, aspect-ratio 284:59, padding 12/10,
-     and drop-shadow filter. Width comes from --cta-width (280 on
-     mobile) via the desktop `width: 100%` rule, so the rendered pill
-     is 280 × 58.17 with the same glass SVG as desktop. No mobile-
-     specific overrides needed here.
+  /* Pill on mobile uses a PURE-VECTOR SVG (assets/pill-mobile.svg).
+     The desktop pill.svg has a <foreignObject> containing an HTML
+     conic-gradient — that's what Figma exports use to fake conic
+     gradients in SVG. But foreignObject rasterizes at the SVG's
+     intrinsic dimensions, so it goes blurry on high-DPI mobile
+     screens. pill-mobile.svg replaces that conic gradient with a
+     plain SVG linear gradient on the rim path, so the pill renders
+     pixel-sharp at any DPI. Width / aspect / padding inherited
+     from desktop. */
+  .pill {
+    background: url('assets/pill-mobile.svg') center / 100% 100% no-repeat;
+  }
 
-     The .pill-fx rainbow halo only animates on @media (hover: hover),
-     so it stays invisible on touch — but we display:none it anyway
-     to skip the extra SVG rendering cost. Same for .pill::after, the
-     cursor-tracked specular, which has no input on touch devices. */
+  /* .pill-fx rainbow halo and .pill::after specular are touch-no-ops
+     (hover-gated / cursor-driven); display:none skips render cost. */
   .pill-fx {
     display: none;
   }
