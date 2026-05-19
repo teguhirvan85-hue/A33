@@ -75,8 +75,15 @@ img {
   inset: 0;
   pointer-events: none;
   z-index: 3;
+  /* Highlight radius scales with the chrome image at smaller viewports
+     but caps at 320px (the value that looks perfect at 1920×1080, per
+     client). At 1920×1080 chrome is 2160px (capped by 200vh) and
+     320/2160 ≈ 14.8% — that's the proportional ratio. At 1440×900
+     chrome is 1800px so the proportional radius drops to ~267px.
+     At any viewport ≥ 1920×1080 the min() caps at 320 exactly. */
+  --highlight-r: min(320px, calc(min(140vw, 200vh, 2240px) * 0.148));
   background: radial-gradient(
-    circle 320px at var(--ccx, -1000px) var(--ccy, -1000px),
+    circle var(--highlight-r) at var(--ccx, -1000px) var(--ccy, -1000px),
     rgba(255, 255, 255, 0.9),
     transparent 65%
   );
