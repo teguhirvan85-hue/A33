@@ -450,28 +450,33 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Logo top — Figma 131/952 = 13.76svh */
-    --pad-y: 13.76svh;
+    /* Logo top — raised 100px from Figma 131 → 31 = 3.26svh.
+       Logo and CTA cluster shifted together so the 43px gap between
+       them is preserved. */
+    --pad-y: 3.26svh;
     --cta-width: 280px;
     --logo-w: 162px;
     --contact-text: 24px;
     --legal-text: 11px;
   }
 
-  /* Logo — Figma 11448:110: centered, top 131, 162×33 */
+  /* Logo — raised 100px. max() with safe-area-inset-top so on iPhones
+     with a notch / Dynamic Island the logo stays clear of it. */
   .brand {
     position: absolute;
-    top: var(--pad-y);
+    top: max(calc(env(safe-area-inset-top) + 8px), var(--pad-y));
     left: 50%;
     transform: translateX(-50%);
     padding: 0;
   }
 
-  /* CTA cluster — Figma 11448:122: left 80, top 207, w 280, gap 30.
-     80 = (440-280)/2 horizontally centered. */
+  /* CTA cluster — anchored to brand top + 76px (logo height 33 + Figma
+     43px gap between logo bottom and CTA top), so the cluster always
+     sits a constant distance below the (possibly safe-area-shifted)
+     logo. Raised in lockstep with --pad-y. */
   .cta {
     position: absolute;
-    top: 21.74svh;
+    top: calc(max(calc(env(safe-area-inset-top) + 8px), var(--pad-y)) + 76px);
     left: 50%;
     right: auto;
     transform: translateX(-50%);
