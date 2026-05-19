@@ -491,7 +491,37 @@ img {
   }
 }
 
-/* ---------- Ultra-wide / 4K (>1920px): cap sizes so things don't bloom ---------- */
+/* ---------- 1440+ desktop pin (Option C per client) -----------------
+   Per client direction, the 1440 layout should match 1920 1:1 for all
+   UI chrome (logo, padding, contact text, legal). Without this, several
+   clamp() values keep scaling down with vw between 1440 and ~1728, so
+   the same page on a MacBook Air 13" feels visibly smaller than on a
+   1920 monitor.
+
+   The chrome image + glow + cursor highlight intentionally STAY
+   viewport-relative — pinning them to 1920 sizes would crop the A33
+   letters more aggressively on 1440 and over-size the highlight effect.
+
+   Placed BEFORE the >=1920 ultra-wide block so the ultra-wide block
+   wins for true 1920+ displays (pad-x/pad-y get progressive scaling). */
+@media (min-width: 1440px) {
+  :root {
+    --pad-x: 57.6px;       /* matches 1920×1080: 3vw cap from ultra-wide rule */
+    --pad-y: 48px;          /* matches 1920×1080 */
+    --cta-right: 65px;     /* matches 1920 (clamp cap) */
+    --legal-right: 24px;
+    --legal-bottom: 23px;
+    --contact-text: 24px;
+    --logo-w: 162px;
+  }
+  /* CTA top uses vh-based clamp inline on .cta — override to match 1920
+     which caps at 50px. */
+  .cta {
+    top: 50px;
+  }
+}
+
+/* ---------- Ultra-wide / 4K (>=1920px): cap sizes so things don't bloom ---------- */
 @media (min-width: 1920px) {
   :root {
     --pad-x: clamp(48px, 3vw, 96px);
