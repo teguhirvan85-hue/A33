@@ -564,18 +564,21 @@ img {
     flex-wrap: nowrap;
   }
 
-  /* Rainbow halo: ENABLED on mobile, tied to --pill-near (proximity
-     to pill bbox via fluid.js). Mirrors desktop hover behavior using
-     touch proximity. Fades in when finger drags near pill. */
+  /* Rainbow halo: ENABLED on mobile but hidden by default; only
+     activates on PRESS (when user taps the pill), via the .is-pressed
+     class that fluid.js toggles on pointerdown/up. Previous behavior
+     tied to --pill-near (proximity drag) felt accidental. */
   .pill-fx {
     display: block;
-    opacity: var(--pill-near, 0);
+    opacity: 0;
+  }
+  .pill.is-pressed .pill-fx {
+    opacity: 1;
   }
 
   /* === Pill ::after: AUTO-animation (phantom cursor sweep) ===========
-     Lighter rgba (0.55 vs desktop's 0.95) per client — pill is small
-     and the 144px gradient was too dominant on the 224×47 pill at
-     full opacity. Subtler base brightness, same proximity feel. */
+     rgba lowered to 0.3 per client — subtler white specular that
+     doesn't overpower the small 224×47 pill. */
   .pill::after {
     display: block;
     content: "";
@@ -584,20 +587,20 @@ img {
     pointer-events: none;
     background: radial-gradient(
       circle 144px at var(--auto-px, 50%) var(--auto-py, 50%),
-      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0) 70%
     );
     -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
             mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
     mix-blend-mode: screen;
     opacity: var(--auto-opacity, 0);
-    animation: pill-auto-sweep 4s ease-in-out infinite;
+    /* Slower sweep per client: 4s → 7s for a more relaxed pace */
+    animation: pill-auto-sweep 7s ease-in-out infinite;
     z-index: 1;
   }
 
   /* === Pill ::before: TOUCH & DRAG (real cursor) =====================
-     Same subtler rgba 0.55 as ::after, so the touch effect doesn't
-     overpower the pill when finger is on it. */
+     Same lighter rgba 0.3 as ::after for consistency. */
   .pill::before {
     content: "";
     position: absolute;
@@ -605,7 +608,7 @@ img {
     pointer-events: none;
     background: radial-gradient(
       circle 144px at var(--pmx, 50%) var(--pmy, 50%),
-      rgba(255, 255, 255, 0.55),
+      rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0) 70%
     );
     -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;

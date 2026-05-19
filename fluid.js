@@ -81,6 +81,20 @@ function init() {
   document.addEventListener("pointerleave", onLeave, { passive: true });
   document.addEventListener("pointercancel", onLeave, { passive: true });
 
+  // Pill press state — toggles .is-pressed class on .pill so the
+  // rainbow halo (.pill-fx) can light up only while the pill is being
+  // pressed/tapped, instead of fading in on proximity. CSS rule
+  // activating the halo is scoped to mobile @media so this is a
+  // visual no-op on desktop (desktop :hover keeps controlling halo).
+  if (pillEl) {
+    const addPressed = () => pillEl.classList.add("is-pressed");
+    const removePressed = () => pillEl.classList.remove("is-pressed");
+    pillEl.addEventListener("pointerdown", addPressed, { passive: true });
+    pillEl.addEventListener("pointerup", removePressed, { passive: true });
+    pillEl.addEventListener("pointercancel", removePressed, { passive: true });
+    pillEl.addEventListener("pointerleave", removePressed, { passive: true });
+  }
+
   // Manhattan-style proximity to a rect's outer boundary.
   // Returns 0 if (x,y) is inside the rect, otherwise the Euclidean
   // distance from (x,y) to the nearest edge.
