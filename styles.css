@@ -111,13 +111,17 @@ img {
    are rendered with feGaussianBlur stdDeviation=260 inside the SVG. */
 .glow {
   position: absolute;
-  /* Matches Figma 11448:63 frame7: left:-60 w:2039 top:587 h:1242 on
-     a 1728×1117 canvas. Horizontal: -60/1728=-3.5%, 2039/1728=118%.
-     Vertical: 587/1117=52.55%, 1242/1117=111.2%. */
+  /* Matches Figma 11448:63 frame7 (canvas 1728×1117).
+     Width tied to viewport width (118% ≈ 2039/1728). Height capped by
+     viewport height so the gradient stays the same proportion of the
+     chrome glow at every aspect ratio — without the cap, at 1440×900
+     the glow extends ~575px below the viewport and crowds the legal
+     text. Top is 52.55vh (matches 587/1117) so the glow always sits
+     just below the chrome letters. */
   left: -3.5%;
   width: 118%;
   top: 52.55%;
-  height: 111.2%;
+  height: min(111.2%, 95vh);
   z-index: 0;
   pointer-events: none;
   background: url('assets/glow.svg') no-repeat center / 100% 100%;
@@ -143,12 +147,22 @@ img {
 
 .chrome-wrap {
   position: absolute;
-  width: min(140vw, 2240px);
+  /* Triple-cap so the chrome scales proportionally to BOTH viewport width
+     and height (and never exceeds Figma's 2240px reference).
+     - 140vw → caps on narrow/tall screens (phones in portrait)
+     - 200vh → caps on wide/short screens (1440×900 MacBook, 1920×1080)
+       Figma 11448:173 has image width ≈ 2240 at 1117vh → 200.5vh.
+     - 2240px → hard cap for 4K+ displays. */
+  width: min(140vw, 200vh, 2240px);
   aspect-ratio: 2327 / 1101;
-  /* Matches Figma 11448:173 at canvas 1728×1117: left -224 (≈-13vw),
-     top 357 → bottom offset = (1117-357-1061)/1117 = -26.9% ≈ -27%. */
-  left: max(-13vw, calc(50% - min(140vw, 2240px) / 2));
-  bottom: -27%;
+  /* Centered horizontally — Figma 11448:173 places the 2240px-wide image
+     at left -256 in a 1728px canvas, which is exactly horizontally
+     centered. translateX(-50%) keeps it centered at every viewport. */
+  left: 50%;
+  transform: translateX(-50%);
+  /* Top-anchored proportional positioning — Figma 11448:173 has chrome
+     image top at 357/1117 = 32% from viewport top. */
+  top: 32%;
 }
 
 /* Base chrome image — fills the wrapper. */
