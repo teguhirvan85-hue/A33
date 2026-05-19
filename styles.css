@@ -638,6 +638,13 @@ img {
     );
     -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
             mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+    /* Luminance mode = only the bright iridescent rim of the chrome
+       PNG passes highlight (black letter interior has luminance 0 so
+       it blocks). Safari < 17.2 doesn't support mask-mode → defaults
+       to alpha (where opaque black letter would PASS highlight, making
+       the interior glow). -webkit-mask-source-type is the older Safari
+       property that forces luminance interpretation in those builds. */
+    -webkit-mask-source-type: luminance;
     -webkit-mask-mode: luminance;
             mask-mode: luminance;
     mix-blend-mode: screen;
@@ -664,6 +671,7 @@ img {
     );
     -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
             mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
+    -webkit-mask-source-type: luminance;
     -webkit-mask-mode: luminance;
             mask-mode: luminance;
     mix-blend-mode: screen;
