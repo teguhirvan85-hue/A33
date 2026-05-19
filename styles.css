@@ -564,16 +564,18 @@ img {
     flex-wrap: nowrap;
   }
 
-  /* Rainbow hover halo stays hidden on touch (no hover state) */
+  /* Rainbow halo: ENABLED on mobile, tied to --pill-near (proximity
+     to pill bbox via fluid.js). Mirrors desktop hover behavior using
+     touch proximity. Fades in when finger drags near pill. */
   .pill-fx {
-    display: none;
+    display: block;
+    opacity: var(--pill-near, 0);
   }
 
   /* === Pill ::after: AUTO-animation (phantom cursor sweep) ===========
-     Uses the same gradient params as desktop pill::after (180px radius
-     scaled to 0.8× = 144px; same rgba 0.95 → transparent 70%; same
-     screen blend) so the visual feel matches desktop's cursor specular.
-     --auto-opacity animates 0↔1 at keyframe edges for phantom in/out. */
+     Lighter rgba (0.55 vs desktop's 0.95) per client — pill is small
+     and the 144px gradient was too dominant on the 224×47 pill at
+     full opacity. Subtler base brightness, same proximity feel. */
   .pill::after {
     display: block;
     content: "";
@@ -582,7 +584,7 @@ img {
     pointer-events: none;
     background: radial-gradient(
       circle 144px at var(--auto-px, 50%) var(--auto-py, 50%),
-      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.55),
       rgba(255, 255, 255, 0) 70%
     );
     -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
@@ -594,10 +596,8 @@ img {
   }
 
   /* === Pill ::before: TOUCH & DRAG (real cursor) =====================
-     Layered on top of ::after via DOM order. Identical to desktop
-     pill::after — uses --pmx/--pmy from fluid.js (which fires on
-     pointermove, including touch drags on iOS/Android). Proximity
-     gated by --pill-near. */
+     Same subtler rgba 0.55 as ::after, so the touch effect doesn't
+     overpower the pill when finger is on it. */
   .pill::before {
     content: "";
     position: absolute;
@@ -605,7 +605,7 @@ img {
     pointer-events: none;
     background: radial-gradient(
       circle 144px at var(--pmx, 50%) var(--pmy, 50%),
-      rgba(255, 255, 255, 0.95),
+      rgba(255, 255, 255, 0.55),
       rgba(255, 255, 255, 0) 70%
     );
     -webkit-mask: url('assets/pill-mobile.png') center / 100% 100% no-repeat;
@@ -633,7 +633,7 @@ img {
     --highlight-r: 36.4vw;
     background: radial-gradient(
       circle var(--highlight-r) at var(--auto-x, 50%) var(--auto-y, 50%),
-      rgba(255, 255, 255, 0.9),
+      rgba(255, 255, 255, 1),
       transparent 65%
     );
     -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
@@ -666,7 +666,7 @@ img {
     --highlight-r: 36.4vw;
     background: radial-gradient(
       circle var(--highlight-r) at var(--ccx, -1000px) var(--ccy, -1000px),
-      rgba(255, 255, 255, 0.9),
+      rgba(255, 255, 255, 1),
       transparent 65%
     );
     -webkit-mask: url('assets/a33-chrome.png') no-repeat center / 100% 100%;
