@@ -499,15 +499,22 @@ img {
     white-space: nowrap;
   }
 
-  /* Chrome image — Figma 11488:149: w-1251 h-592 left:-265 top:442
-     on canvas 440×952. dvh so it stays anchored within the visible
-     area on iOS Safari (vh would position it relative to the full
-     viewport including Safari chrome, pushing it under the toolbar). */
+  /* Chrome image — Figma 11488:149.
+     Two changes vs the desktop default:
+     - width capped by svh: min(284.3vw, 131.4svh). 131.4svh × 1101/2327
+       = 62.2svh height, matching Figma's chrome height ratio (592/952)
+       at the reference canvas. On narrow/short Safari viewports the
+       svh cap kicks in so chrome height never exceeds ~62% of visible
+       area.
+     - bottom-anchored (bottom: 0): chrome's bottom edge stops at the
+       top of the Safari toolbar (svh bottom) so the toolbar never
+       clips the letters. Replaces top: 46.43svh which left chrome
+       extending past svh on shorter visible areas. */
   .chrome-wrap {
-    width: 284.3vw;                /* 1251/440 */
-    left: -60.23vw;                 /* -265/440 */
-    top: 46.43svh;                  /* 442/952 */
-    bottom: auto;
+    width: min(284.3vw, 131.4svh);
+    left: -60.23vw;
+    bottom: 0;
+    top: auto;
     transform: none;
   }
 }
