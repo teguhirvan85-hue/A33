@@ -135,18 +135,49 @@ img {
 }
 
 @media (max-width: 720px) {
-  /* Mobile glow — Figma 11448:103 frame inside V2 (canvas 440×952):
-     left -88, width 670, top 365, height 627.
-     -88/440 = -20vw, 670/440 = 152.3vw, 365/952 = 38.34vh, 627/952 = 65.86vh.
-     dvh (instead of vh) so the glow stays in the visible area as iOS
-     Safari's URL bar shows/hides — vh would put it under the toolbar. */
+  /* Mobile glow — Figma 11448:102 updated. Two ellipse PNGs from
+     Figma exports, positioned diagonally per Figma:
+     - glow-1 (right-bottom): wrapper 472×197 with translateX(-50%)
+       at left calc(50%+179) top 522 → center (399, 620.5) on canvas
+     - glow-2 (left-upper): wrapper 472×197 with translateX(-50%)
+       at left calc(50%-231) top 317 → center (-11, 415.5) on canvas
+     The PNGs are placed as full-stage backgrounds layered together so
+     the rendered glow extends naturally across the visible area. */
   .glow {
-    left: -20vw;
-    width: 152.3vw;
-    top: 38.34svh;
-    height: 65.86svh;
+    left: 0;
+    width: 100vw;
+    top: 0;
+    height: 100svh;
     right: auto;
     bottom: auto;
+    background: none;
+  }
+  .glow::before,
+  .glow::after {
+    content: "";
+    position: absolute;
+    /* Use Figma's INNER div size (951.2 × 676.2 after -121.63/-50.77
+       insets) instead of the wrapper, so the PNG renders full-bleed
+       and its soft-blur edges fade off-screen rather than getting
+       hard-cropped at the wrapper bounds. */
+    width: 216.18vw;       /* 951.2/440 */
+    height: 70.95svh;       /* 676.2/952 */
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translate(-50%, -50%);
+  }
+  .glow::before {
+    /* Right-bottom ellipse */
+    left: 90.68vw;        /* 399/440 */
+    top: 65.18svh;         /* 620.5/952 */
+    background-image: url('assets/glow-1.png');
+  }
+  .glow::after {
+    /* Left-upper ellipse */
+    left: -2.5vw;          /* -11/440 */
+    top: 43.65svh;         /* 415.5/952 */
+    background-image: url('assets/glow-2.png');
   }
 }
 
@@ -414,8 +445,8 @@ img {
 */
 @media (max-width: 720px) {
   :root {
-    /* Brand top — 39/952 = 4.1svh */
-    --pad-y: 4.1svh;
+    /* Brand top — Figma 11448:110 updated: top 131/952 = 13.76svh */
+    --pad-y: 13.76svh;
     /* CTA cluster width — Figma 11448:122: 280 */
     --cta-width: min(280px, 86vw);
     /* Reset desktop-pin variables that bleed in */
@@ -435,12 +466,11 @@ img {
     padding: 0;
   }
 
-  /* CTA cluster CENTERED — Figma 11448:122: left 80, top 115, w 280.
-     80 = (440-280)/2 so the cluster is horizontally centered.
-     115/952 = 12.08svh. */
+  /* CTA cluster CENTERED — Figma 11448:122 updated: left 80, top 207,
+     w 280. 80 = (440-280)/2 horizontally centered. 207/952 = 21.74svh. */
   .cta {
     position: absolute;
-    top: 12.08svh;
+    top: 21.74svh;
     left: 50%;
     right: auto;
     transform: translateX(-50%);
@@ -480,11 +510,10 @@ img {
     display: none;
   }
 
-  /* Legal — Figma 11448:140: bottom-CENTERED, 1.88% from canvas bottom
-     = 17.9px on 952 canvas. Matches Figma exactly. env-safe-bottom
-     overrides on iOS devices with a home indicator (~34px). */
+  /* Legal — Figma 11448:140 updated: bottom 12.87% from canvas bottom
+     = 122.5px on 952 canvas (was 1.88% / ~18px). Moved up significantly. */
   .legal {
-    bottom: max(env(safe-area-inset-bottom), 1.88svh);
+    bottom: max(env(safe-area-inset-bottom), 12.87svh);
     right: auto;
     left: 50%;
     transform: translateX(-50%);
@@ -493,20 +522,16 @@ img {
     white-space: nowrap;
   }
 
-  /* Chrome image — Figma 11448:102 / 11488:149.
-     Figma reference: chrome bottom = 1034 on canvas 952, i.e. extends
-     8.6% past the canvas bottom (intended clip). We anchor by bottom
-     so this 8.6% ratio is preserved at every viewport — at 440×952
-     chrome top resolves to 442 (Figma exact), at 393×734 (iPhone with
-     Safari bars) chrome top resolves to ~268, so the letters still
-     occupy the same Figma proportion of the visible area instead of
-     getting cropped 25% by the Safari toolbar.
-     width: 284.3vw (= 1251 at 440), left: -60.23vw (= -265 at 440). */
+  /* Chrome image — Figma 11448:102 updated: smaller and positioned
+     higher to fit Safari visible area cleanly.
+     width 1081.93/440 = 245.89vw, left -193/440 = -43.86vw,
+     top 329/952 = 34.56svh, height 511.9/952 = 53.77svh.
+     Chrome now fits within canvas (no overflow at bottom). */
   .chrome-wrap {
-    width: 284.3vw;
-    left: -60.23vw;
-    bottom: -8.6svh;
-    top: auto;
+    width: 245.89vw;
+    left: -43.86vw;
+    top: 34.56svh;
+    bottom: auto;
     transform: none;
   }
 }
