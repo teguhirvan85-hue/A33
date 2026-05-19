@@ -509,9 +509,12 @@ img {
     font-size: 22.4px;
   }
 
-  /* Contacts row — Figma gap 24 × 0.8 = 19.2 */
+  /* Contacts row — Figma gap 24 × 0.8 = 19.2. nowrap so Call/Mail/IG
+     always stay on a single line (base CSS has flex-wrap: wrap which
+     can break them onto two rows at narrow viewports). */
   .contacts {
     gap: 19.2px;
+    flex-wrap: nowrap;
   }
 
   /* Touch-no-ops for hover/cursor effects */
